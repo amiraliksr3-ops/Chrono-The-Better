@@ -12,7 +12,7 @@ jobs:
     permissions: write-all
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -53,7 +53,7 @@ jobs:
         run: flutter build apk --release --split-per-abi --flavor dev
 
       - name: Save APKs to Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: APKs
           path: build/app/outputs/flutter-apk/*.apk

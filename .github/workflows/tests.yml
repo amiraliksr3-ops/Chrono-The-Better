@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v5
     - uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.22.2' # or, you can use 1.22
@@ -21,4 +21,4 @@ jobs:
         cache: true
     - run: flutter test --coverage
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v6
