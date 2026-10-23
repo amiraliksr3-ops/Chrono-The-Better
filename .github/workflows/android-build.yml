@@ -29,13 +29,20 @@ jobs:
           cache: true
 
       - name: Create key.properties
+        env:
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          echo keyPassword=\${{ secrets.KEY_PASSWORD }} > ./android/key.properties
-          echo storePassword=\${{ secrets.KEY_STORE_PASSWORD }} >> ./android/key.properties
-          echo keyAlias=\${{ secrets.KEY_ALIAS }} >> ./android/key.properties
+          printf 'keyPassword=%s
+storePassword=%s
+keyAlias=%s
+' "$KEY_PASSWORD" "$KEY_STORE_PASSWORD" "$KEY_ALIAS" > ./android/key.properties
 
       - name: Load key
-        run: echo "${{ secrets.KEYSTORE_JKS_RELEASE }}" | base64 --decode > android/app/release-key.jks
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE_JKS_RELEASE }}
+        run: echo "$KEYSTORE" | base64 --decode > android/app/release-key.jks
 
       - name: Turn off analytics
         run: flutter config --no-analytics
