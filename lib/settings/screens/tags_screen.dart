@@ -16,33 +16,33 @@ class TagsScreen extends StatefulWidget {
   State<TagsScreen> createState() => _TagsScreenState();
 }
 
+Future<Tag?> showTagEditor(BuildContext context, [Tag? initialTag]) async {
+  Tag newTag = Tag.from(initialTag ?? Tag("New Preset"));
+
+  String? tagName = await showModalBottomSheet<String>(
+    context: context,
+    isScrollControlled: true,
+    enableDrag: true,
+    builder: (BuildContext context) {
+      return StatefulBuilder(
+        builder: (BuildContext context, StateSetter setState) {
+          return InputBottomSheet(
+            title: AppLocalizations.of(context)!.editTagLabel,
+            description: "",
+            initialValue: newTag.name,
+            hintText: AppLocalizations.of(context)!.tagNamePlaceholder,
+            onChange: (value) {},
+          );
+        },
+      );
+    },
+  );
+  newTag.name = tagName ?? newTag.name;
+  return newTag;
+}
+
 class _TagsScreenState extends State<TagsScreen> {
   final _listController = PersistentListController<Tag>();
-
-  Future<Tag?> showTagEditor([Tag? initialTag]) async {
-    Tag newTag = Tag.from(initialTag ?? Tag("New Preset"));
-
-    String? tagName = await showModalBottomSheet<String>(
-      context: context,
-      isScrollControlled: true,
-      enableDrag: true,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return InputBottomSheet(
-              title: AppLocalizations.of(context)!.editTagLabel,
-              description: "",
-              initialValue: newTag.name,
-              hintText: AppLocalizations.of(context)!.tagNamePlaceholder,
-              onChange: (value) {},
-            );
-          },
-        );
-      },
-    );
-    newTag.name = tagName ?? newTag.name;
-    return newTag;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +63,7 @@ class _TagsScreenState extends State<TagsScreen> {
                     onPressDuplicate: () => _listController.duplicateItem(tag),
                   ),
                   onTapItem: (tag, index) async {
-                    Tag? newTag = await showTagEditor(tag);
+                    Tag? newTag = await showTagEditor(context, tag);
                     if (newTag == null) return;
                     tag.copyFrom(newTag);
                     _listController.changeItems((tags) {});
@@ -79,7 +79,7 @@ class _TagsScreenState extends State<TagsScreen> {
           FAB(
             bottomPadding: 8,
             onPressed: () async {
-              Tag? tag = await showTagEditor();
+              Tag? tag = await showTagEditor(context);
               if (tag == null) return;
               _listController.addItem(tag);
             },

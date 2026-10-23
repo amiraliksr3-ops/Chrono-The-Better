@@ -3,6 +3,7 @@ import 'package:clock_app/common/widgets/fab.dart';
 import 'package:clock_app/common/widgets/fields/input_bottom_sheet.dart';
 import 'package:clock_app/common/widgets/list/persistent_list_view.dart';
 import 'package:clock_app/navigation/widgets/app_top_bar.dart';
+import 'package:clock_app/settings/screens/tags_screen.dart';
 import 'package:clock_app/settings/widgets/tag_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -39,7 +40,7 @@ class _ListFilterSettingsScreenState extends State<ListFilterSettingsScreen> {
                     onPressDuplicate: () => _listController.duplicateItem(tag),
                   ),
                   onTapItem: (tag, index) async {
-                    Tag? newTag = await showTagEditor(tag);
+                    Tag? newTag = await showTagEditor(context, tag);
                     if (newTag == null) return;
                     tag.copyFrom(newTag);
                     _listController.changeItems((tags) {});
@@ -55,7 +56,7 @@ class _ListFilterSettingsScreenState extends State<ListFilterSettingsScreen> {
           FAB(
             bottomPadding: 8,
             onPressed: () async {
-              Tag? tag = await showTagEditor();
+              Tag? tag = await showTagEditor(context);
               if (tag == null) return;
               _listController.addItem(tag);
             },
