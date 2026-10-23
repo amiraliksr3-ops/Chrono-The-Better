@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clock_app/alarm/logic/alarm_mute.dart';
 import 'package:clock_app/common/utils/text_size.dart';
 import 'package:clock_app/common/widgets/card_container.dart';
 import 'package:clock_app/settings/types/setting_group.dart';
@@ -104,6 +105,9 @@ class _MathTaskState extends State<MathTask> {
   void initState() {
     super.initState();
     _textController.addListener(() {
+      // Every typed character counts as a mission interaction, wrong answers
+      // included
+      AlarmMuteController.instance.interact();
       if (_textController.text == _difficultyLevel._answer &&
           _problemsSolved < _problemCount) {
         _problemsSolved += 1;

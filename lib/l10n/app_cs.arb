@@ -98,5 +98,13 @@
   "materialBrightnessDark": "Tmavý",
   "@materialBrightnessDark": {},
   "clockSettingGroup": "Hodiny",
-  "@clockSettingGroup": {}
+  "@clockSettingGroup": {},
+  "muteAlarmButton": "Ztlumit na 30 s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Ztlumeno",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Úkoly budíku se nemusí zobrazit na uzamčené obrazovce",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Budíky s úkoly se na uzamčené obrazovce nezobrazí, pokud nejsou povoleny budíky na celou obrazovku. Klepněte sem pro jejich povolení v nastavení oznámení.",
+  "@fullScreenIntentWarningDescription": {}
 }

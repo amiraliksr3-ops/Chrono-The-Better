@@ -46,5 +46,13 @@
   "showSecondsSetting": "Másodpercek mutatása",
   "@showSecondsSetting": {},
   "pickerSpinner": "Pörgetős",
-  "@pickerSpinner": {}
+  "@pickerSpinner": {},
+  "muteAlarmButton": "Némítás 30 mp-re",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Elnémítva",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Az ébresztő feladatok lehet, hogy nem jelennek meg a zárolási képernyőn",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Feladatokat tartalmazó ébresztők nem jelennek meg a zárolási képernyőn, amíg a teljes képernyős ébresztők nem engedélyezettek. Koppints ide az engedélyezésükhöz az értesítési beállításokban.",
+  "@fullScreenIntentWarningDescription": {}
 }

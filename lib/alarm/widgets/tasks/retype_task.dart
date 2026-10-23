@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clock_app/alarm/logic/alarm_mute.dart';
 import 'package:clock_app/common/utils/text_size.dart';
 import 'package:clock_app/common/widgets/card_container.dart';
 import 'package:clock_app/settings/types/setting_group.dart';
@@ -56,6 +57,9 @@ class _RetypeTaskState extends State<RetypeTask> {
   void initState() {
     super.initState();
     _textController.addListener(() {
+      // Every typed character counts as a mission interaction, wrong answers
+      // included
+      AlarmMuteController.instance.interact();
       if (_textController.text == string && _problemsSolved < _problemCount) {
         _problemsSolved += 1;
         if (_problemsSolved >= _problemCount) {

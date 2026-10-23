@@ -122,5 +122,13 @@
   "notificationPermissionAlreadyGranted": "Notificaties rechten zijn al toegekend",
   "@notificationPermissionAlreadyGranted": {},
   "ignoreBatteryOptimizationAlreadyGranted": "Negeer batterij optimalisatie rechten zijn al toegekend",
-  "@ignoreBatteryOptimizationAlreadyGranted": {}
+  "@ignoreBatteryOptimizationAlreadyGranted": {},
+  "muteAlarmButton": "30 s dempen",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Gedempt",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Missies van het alarm verschijnen mogelijk niet op het vergrendelscherm",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Alarmen met missies verschijnen niet op het vergrendelscherm, tenzij alarmeren op volledig scherm is toegestaan. Tik hier om ze toe te staan in de meldingsinstellingen.",
+  "@fullScreenIntentWarningDescription": {}
 }

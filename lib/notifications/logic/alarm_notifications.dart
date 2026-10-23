@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:awesome_notifications/android_foreground_service.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:clock_app/alarm/logic/alarm_isolate.dart';
+import 'package:clock_app/alarm/logic/alarm_mute.dart';
 import 'package:clock_app/alarm/logic/update_alarms.dart';
 import 'package:clock_app/app.dart';
 import 'package:clock_app/common/types/notification_type.dart';
@@ -15,6 +16,7 @@ import 'package:clock_app/alarm/logic/schedule_alarm.dart';
 import 'package:clock_app/navigation/types/routes.dart';
 import 'package:clock_app/notifications/types/alarm_notification_arguments.dart';
 import 'package:clock_app/notifications/types/fullscreen_notification_data.dart';
+import 'package:clock_app/system/logic/screen_flags.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
 import 'package:flutter_show_when_locked/flutter_show_when_locked.dart';
 import 'package:move_to_background/move_to_background.dart';
@@ -103,6 +105,11 @@ Future<void> closeAlarmNotification(ScheduledNotificationType type) async {
   await removeAlarmNotification(type);
 
   await FlutterShowWhenLocked().hide();
+  await hideOverLockScreen();
+
+  // Cancel any pending alarm mute so that a mute countdown that expires after
+  // the alarm was dismissed/snoozed doesn't restart the alarm
+  AlarmMuteController.instance.cancel();
 
   // If app was launched from a notification, close the app when the notification
   // is closed
@@ -180,6 +187,7 @@ Future<void> openAlarmNotificationScreen(
 }) async {
   logger.t("[openAlarmNotificationScreen]");
   await FlutterShowWhenLocked().show();
+  await showOverLockScreen();
   // If we're already on the same notification screen, pop it off the
   // stack so we don't have two of them on the stack.
   if (Routes.currentRoute == data.route) {

@@ -794,5 +794,13 @@
   "useBackgroundServiceSettingDescription": "Könnte helfen, die Anwendung im Hintergrund laufen zu lassen",
   "@useBackgroundServiceSettingDescription": {},
   "memoryTask": "Gedächtnis",
-  "@memoryTask": {}
+  "@memoryTask": {},
+  "muteAlarmButton": "30 s stumm schalten",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Stummgeschaltet",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Alarm-Aufgaben werden eventuell nicht über dem Sperrbildschirm angezeigt",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Alarme mit Aufgaben werden nicht über dem Sperrbildschirm angezeigt, solange Vollbild-Alarme nicht erlaubt sind. Tippe hier, um sie in den Benachrichtigungseinstellungen zu erlauben.",
+  "@fullScreenIntentWarningDescription": {}
 }

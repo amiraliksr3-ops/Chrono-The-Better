@@ -18,6 +18,8 @@ class RingtonePlayer {
   static AudioPlayer? activePlayer;
   static bool _vibratorIsAvailable = false;
   static bool _stopRisingVolume = false;
+  static bool _stopFadeIn = false;
+  static bool _vibrateOn = false;
 
   static Future<void> initialize() async {
     _alarmPlayer ??= AudioPlayer(handleInterruptions: true);
@@ -96,6 +98,7 @@ class RingtonePlayer {
   }) async {
     try {
       _stopRisingVolume = false;
+      _vibrateOn = vibrate;
 
       RingtoneManager.lastPlayedRingtoneUri = ringtoneUri;
       if (_vibratorIsAvailable && vibrate) {
@@ -142,6 +145,40 @@ class RingtonePlayer {
     }
   }
 
+  /// Silences the alarm: stops the sound and cancels the vibration.
+  static Future<void> mute() async {
+    _stopRisingVolume = true;
+    _stopFadeIn = true;
+    await pause();
+  }
+
+  /// Fades the alarm sound back in from silence to [targetVolume] (0.0 - 1.0)
+  /// over [seconds] seconds and restarts the vibration pattern if the alarm
+  /// vibrates.
+  static Future<void> unmuteFade(double targetVolume, int seconds) async {
+    try {
+      _stopFadeIn = false;
+      await activePlayer?.setVolume(0);
+      await activePlayer?.play();
+      if (_vibratorIsAvailable && _vibrateOn) {
+        Vibration.vibrate(pattern: [500, 1000], repeat: 0);
+      }
+      // Gradually increase the volume from silence to the target volume
+      for (int i = 0; i <= 10; i++) {
+        Future.delayed(
+          Duration(milliseconds: i * (seconds * 100)),
+          () {
+            if (!_stopFadeIn) {
+              setVolume((i / 10) * targetVolume);
+            }
+          },
+        );
+      }
+    } catch (e) {
+      logger.e("Error fading in alarm volume: $e");
+    }
+  }
+
   static Future<void> pause() async {
     await activePlayer?.pause();
     if (_vibratorIsAvailable) {
@@ -158,5 +195,7 @@ class RingtonePlayer {
     }
     RingtoneManager.lastPlayedRingtoneUri = "";
     _stopRisingVolume = false;
+    _stopFadeIn = false;
+    _vibrateOn = false;
   }
 }

@@ -794,5 +794,13 @@
   "showDigitalClock": "டிசிட்டல் கடிகாரத்தைக் காட்டு",
   "@showDigitalClock": {},
   "backgroundServiceIntervalSettingDescription": "சில பேட்டரி ஆயுள் செலவில், பயன்பாட்டை உயிரோடு வைத்திருக்க குறைந்த இடைவெளி உதவும்",
-  "@backgroundServiceIntervalSettingDescription": {}
+  "@backgroundServiceIntervalSettingDescription": {},
+  "muteAlarmButton": "30 வினாடிகள் மௌனமாக்கு",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "மௌனமாக்கப்பட்டது",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "அலாரம் பணிகள் பூட்டுத் திரையில் தோன்றாமல் போகலாம்",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "முழுத்திரை அலாரங்களுக்கு அனுமதி இல்லாவிட்டால், பணிகள் கொண்ட அலாரங்கள் பூட்டுத் திரையில் தோன்றாது. அறிவிப்பு அமைப்புகளில் அனுமதிக்க இங்கே தட்டவும்.",
+  "@fullScreenIntentWarningDescription": {}
 }

@@ -794,5 +794,13 @@
   "useBackgroundServiceSetting": "Использовать фоновую службу",
   "@useBackgroundServiceSetting": {},
   "useBackgroundServiceSettingDescription": "Может помочь сохранить приложение активным в фоновом режиме",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "Отключить звук на 30 с",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Звук отключён",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Миссии будильника могут не отображаться на экране блокировки",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Будильники с миссиями не будут отображаться на экране блокировки, если не разрешены полноэкранные будильники. Нажмите здесь, чтобы разрешить их в настройках уведомлений.",
+  "@fullScreenIntentWarningDescription": {}
 }

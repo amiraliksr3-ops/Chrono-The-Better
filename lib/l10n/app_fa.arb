@@ -794,5 +794,13 @@
   "analogClock": "آنالوگ",
   "@analogClock": {},
   "digitalClock": "دیجیتال",
-  "@digitalClock": {}
+  "@digitalClock": {},
+  "muteAlarmButton": "بی‌صدا کردن ۳۰ ثانیه",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "بی‌صدا شد",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "مأموریت‌های زنگ ساعت ممکن است روی صفحه قفل نشان داده نشوند",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "زنگ‌های دارای مأموریت تا زمانی که زنگ‌های تمام‌صفحه مجاز نباشند روی صفحه قفل نشان داده نمی‌شوند. برای مجاز کردن آن‌ها در تنظیمات اعلان‌ها اینجا را ضربه بزنید.",
+  "@fullScreenIntentWarningDescription": {}
 }

@@ -794,5 +794,13 @@
   "arabicNumeral": "Arap",
   "@arabicNumeral": {},
   "showDigitalClock": "Dijital saati göster",
-  "@showDigitalClock": {}
+  "@showDigitalClock": {},
+  "muteAlarmButton": "30 saniye sustur",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Susturuldu",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Alarm görevleri kilit ekranında görünmeyebilir",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Görevli alarmlar, tam ekran alarmlara izin verilmedikçe kilit ekranında gösterilmez. Bildirim ayarlarında izin vermek için buraya dokunun.",
+  "@fullScreenIntentWarningDescription": {}
 }

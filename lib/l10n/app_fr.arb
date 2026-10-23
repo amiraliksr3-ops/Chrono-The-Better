@@ -794,5 +794,13 @@
   "useBackgroundServiceSetting": "Utiliser le service en arrière-plan",
   "@useBackgroundServiceSetting": {},
   "useBackgroundServiceSettingDescription": "Pourrait aider à maintenir l'application en vie en arrière-plan",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "Silence 30 s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "En sourdine",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Les missions d'alarme peuvent ne pas s'afficher sur l'écran de verrouillage",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Les alarmes avec missions ne s'afficheront pas sur l'écran de verrouillage tant que les alarmes plein écran ne sont pas autorisées. Touchez ici pour les autoriser dans les paramètres de notification.",
+  "@fullScreenIntentWarningDescription": {}
 }

@@ -105,7 +105,7 @@ class AboutInfo extends StatelessWidget {
                 ),
                 const SizedBox(width: 16.0),
                 Text(
-                  packageInfo?.appName ?? 'Chrono',
+                  packageInfo?.appName ?? 'Baells Chrono',
                   style: textTheme.titleMedium?.copyWith(
                     color: colorScheme.onSurface,
                   ),

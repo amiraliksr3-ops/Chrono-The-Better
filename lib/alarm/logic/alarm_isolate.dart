@@ -23,6 +23,12 @@ import 'package:clock_app/timer/utils/timer_id.dart';
 const String stopAlarmPortName = "stopAlarmPort";
 const String updatePortName = "updatePort";
 const String setAlarmVolumePortName = "setAlarmVolumePort";
+const String alarmMutePortName = "alarmMutePort";
+
+/// Whether alarm audio is currently playing (or intentionally muted) in this
+/// isolate. Used to ignore unmute messages that arrive after the alarm was
+/// already dismissed, so a stopped alarm doesn't start ringing again.
+bool _alarmAudioActive = false;
 
 @pragma('vm:entry-point')
 void triggerScheduledNotification(int scheduleId, Json params) async {
@@ -75,6 +81,7 @@ void stopScheduledNotification(List<dynamic> message) {
       ScheduledNotificationType.values.byName(message[1]);
 
   if (notificationType == ScheduledNotificationType.alarm) {
+    _alarmAudioActive = false;
     stopAlarm(scheduleId, action);
   } else if (notificationType == ScheduledNotificationType.timer) {
     stopTimer(scheduleId, action);
@@ -140,6 +147,7 @@ void triggerAlarm(int scheduleId, Json params) async {
   }
 
   RingtonePlayer.playAlarm(alarm);
+  _alarmAudioActive = true;
   RingingManager.ringAlarm(scheduleId);
 
   /*
@@ -156,6 +164,20 @@ void triggerAlarm(int scheduleId, Json params) async {
       receivePort.sendPort, setAlarmVolumePortName);
   receivePort.listen((message) {
     setVolume(message[0]);
+  });
+
+  /*
+  Port to mute and unmute the alarm. As the RingtonePlayer only exists in this
+  isolate, the AlarmMuteController in the main UI isolate sends "mute" and
+  "unmute" messages over this port to silence the alarm for 30 seconds and
+  fade it back in when the countdown expires.
+  */
+  ReceivePort mutePort = ReceivePort();
+  IsolateNameServer.removePortNameMapping(alarmMutePortName);
+  IsolateNameServer.registerPortWithName(
+      mutePort.sendPort, alarmMutePortName);
+  mutePort.listen((message) {
+    handleAlarmMuteMessage(message);
   });
 
   String timeFormatString = await loadTextFile("time_format_string");
@@ -176,6 +198,18 @@ void triggerAlarm(int scheduleId, Json params) async {
 
 void setVolume(double volume) {
   RingtonePlayer.setVolume(volume / 100);
+}
+
+void handleAlarmMuteMessage(List<dynamic> message) {
+  if (message[0] == "mute") {
+    RingtonePlayer.mute();
+  } else if (message[0] == "unmute") {
+    // If the alarm was dismissed while muted, don't start it ringing again.
+    // lookupPortByName also returns null in that case on the other side, but
+    // the countdown can expire between the dismissal and the port removal.
+    if (!_alarmAudioActive) return;
+    RingtonePlayer.unmuteFade(message[1] / 100, message[2]);
+  }
 }
 
 void stopAlarm(int scheduleId, AlarmStopAction action) async {

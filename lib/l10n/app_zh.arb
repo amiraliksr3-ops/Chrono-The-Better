@@ -794,5 +794,13 @@
   "useBackgroundServiceSetting": "使用后台服务",
   "@useBackgroundServiceSetting": {},
   "useBackgroundServiceSettingDescription": "可能有助于保持应用在后台活动",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "静音 30 秒",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "已静音",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "闹钟任务可能不会显示在锁屏上",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "除非允许全屏闹钟，否则带任务的闹钟无法在锁屏上弹出。点按此处以在通知设置中进行允许。",
+  "@fullScreenIntentWarningDescription": {}
 }

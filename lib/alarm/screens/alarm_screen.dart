@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clock_app/alarm/data/alarm_list_filters.dart';
 import 'package:clock_app/alarm/data/alarm_sort_options.dart';
 import 'package:clock_app/alarm/logic/new_alarm_snackbar.dart';
@@ -6,12 +8,14 @@ import 'package:clock_app/alarm/utils/next_alarm.dart';
 import 'package:clock_app/alarm/widgets/alarm_card.dart';
 import 'package:clock_app/alarm/widgets/alarm_description.dart';
 import 'package:clock_app/alarm/widgets/alarm_time_picker.dart';
+import 'package:clock_app/alarm/widgets/fullscreen_intent_banner.dart';
 import 'package:clock_app/audio/logic/ringtones.dart';
 import 'package:clock_app/common/logic/customize_screen.dart';
 import 'package:clock_app/common/types/file_item.dart';
 import 'package:clock_app/common/types/list_filter.dart';
 import 'package:clock_app/common/types/picker_result.dart';
 import 'package:clock_app/common/types/time.dart';
+import 'package:clock_app/common/utils/list_storage.dart';
 import 'package:clock_app/common/utils/snackbar.dart';
 import 'package:clock_app/common/widgets/fab.dart';
 import 'package:clock_app/common/widgets/list/customize_list_item_screen.dart';
@@ -20,6 +24,7 @@ import 'package:clock_app/common/widgets/time_picker.dart';
 import 'package:clock_app/navigation/types/quick_action_controller.dart';
 import 'package:clock_app/settings/data/settings_schema.dart';
 import 'package:clock_app/settings/types/setting.dart';
+import 'package:clock_app/system/logic/screen_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -40,6 +45,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
   late Setting _showSort;
   late Setting _showNextAlarm;
   late Alarm? nextAlarm;
+  bool? _fullScreenIntentPermissionGranted;
+  bool _hasAlarmWithTasks = false;
 
   void update(value) {
     setState(() {});
@@ -69,6 +76,8 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
     nextAlarm = getNextAlarm();
 
+    _checkFullScreenIntentPermission();
+
     widget.actionController?.setAction((action) {
       if (action == "add_alarm") {
         _selectTime();
@@ -76,6 +85,18 @@ class _AlarmScreenState extends State<AlarmScreen> {
     });
 
     // ListenerManager().addListener();
+  }
+
+  Future<void> _checkFullScreenIntentPermission() async {
+    if (!Platform.isAndroid) return;
+    bool granted = await canUseFullScreenIntent();
+    List<Alarm> alarms = loadListSync('alarms');
+    if (!mounted) return;
+    setState(() {
+      _fullScreenIntentPermissionGranted = granted;
+      _hasAlarmWithTasks =
+          alarms.any((alarm) => alarm.isEnabled && alarm.tasks.isNotEmpty);
+    });
   }
 
   @override
@@ -282,51 +303,62 @@ class _AlarmScreenState extends State<AlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
-        PersistentListView<Alarm>(
-          saveTag: 'alarms',
-          listController: _listController,
-          itemBuilder: (alarm) => AlarmCard(
-            alarm: alarm,
-            onEnabledChange: (value) => _handleEnableChangeAlarm(alarm, value),
-            onPressDelete: () => _handleDeleteAlarm(alarm),
-            onPressDuplicate: () => _listController.duplicateItem(alarm),
-            onDismiss: () => _handleDismissAlarm(alarm),
-            onSkipChange: (value) => _handleSkipChange(alarm, value),
+        if (_fullScreenIntentPermissionGranted == false && _hasAlarmWithTasks)
+          FullScreenIntentBanner(
+            onDismiss: () =>
+                setState(() => _fullScreenIntentPermissionGranted = null),
           ),
-          onTapItem: (alarm, index) => _handleCustomizeAlarm(alarm),
-          onAddItem: (alarm) async {
-            await alarm.update("onAddItem(): Alarm added by user");
-            _showNextScheduleSnackBar(alarm);
-          },
-          onDeleteItem: (alarm) async {
-            await alarm.disable();
-          },
-          placeholderText: AppLocalizations.of(context)!.noAlarmMessage,
-          reloadOnPop: true,
-          onSaveItems: (items) {
-            nextAlarm = getNextAlarm();
-            setState(() {});
-          },
-          isSelectable: true,
-          // header: getNextAlarmWidget(),
-          listFilters: _getListFilterItems(),
-          customActions: _getCustomActions(),
-          sortOptions: _showSort.value ? alarmSortOptions : [],
+        Expanded(
+          child: Stack(
+            children: [
+              PersistentListView<Alarm>(
+                saveTag: 'alarms',
+                listController: _listController,
+                itemBuilder: (alarm) => AlarmCard(
+                  alarm: alarm,
+                  onEnabledChange: (value) => _handleEnableChangeAlarm(alarm, value),
+                  onPressDelete: () => _handleDeleteAlarm(alarm),
+                  onPressDuplicate: () => _listController.duplicateItem(alarm),
+                  onDismiss: () => _handleDismissAlarm(alarm),
+                  onSkipChange: (value) => _handleSkipChange(alarm, value),
+                ),
+                onTapItem: (alarm, index) => _handleCustomizeAlarm(alarm),
+                onAddItem: (alarm) async {
+                  await alarm.update("onAddItem(): Alarm added by user");
+                  _showNextScheduleSnackBar(alarm);
+                },
+                onDeleteItem: (alarm) async {
+                  await alarm.disable();
+                },
+                placeholderText: AppLocalizations.of(context)!.noAlarmMessage,
+                reloadOnPop: true,
+                onSaveItems: (items) {
+                  nextAlarm = getNextAlarm();
+                  setState(() {});
+                },
+                isSelectable: true,
+                // header: getNextAlarmWidget(),
+                listFilters: _getListFilterItems(),
+                customActions: _getCustomActions(),
+                sortOptions: _showSort.value ? alarmSortOptions : [],
+              ),
+              FAB(
+                onPressed: handleAddAlarmActon,
+              ),
+              if (_showInstantAlarmButton.value)
+                FAB(
+                  onPressed: () {
+                    Alarm alarm = Alarm(Time.fromNow(const Duration(seconds: 5)));
+                    _listController.addItem(alarm);
+                  },
+                  index: 1,
+                  icon: Icons.alarm,
+                )
+            ],
+          ),
         ),
-        FAB(
-          onPressed: handleAddAlarmActon,
-        ),
-        if (_showInstantAlarmButton.value)
-          FAB(
-            onPressed: () {
-              Alarm alarm = Alarm(Time.fromNow(const Duration(seconds: 5)));
-              _listController.addItem(alarm);
-            },
-            index: 1,
-            icon: Icons.alarm,
-          )
       ],
     );
   }

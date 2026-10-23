@@ -1,23 +1,94 @@
 package com.vicolo.chrono
 
+import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
-import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.PluginRegistry.Registrar
-import java.util.ArrayList
-import androidx.annotation.NonNull
+import android.os.Build
+import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
-import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.plugin.common.MethodChannel
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.vicolo.chrono/alarm"
-    
-    override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
+
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "setShowWhenLocked" -> {
+                        applyShowWhenLocked(true)
+                        result.success(null)
+                    }
+                    "clearShowWhenLocked" -> {
+                        applyShowWhenLocked(false)
+                        result.success(null)
+                    }
+                    "setTurnScreenOn" -> {
+                        applyTurnScreenOn(true)
+                        result.success(null)
+                    }
+                    "clearTurnScreenOn" -> {
+                        applyTurnScreenOn(false)
+                        result.success(null)
+                    }
+                    "setKeepScreenOn" -> {
+                        applyKeepScreenOn(true)
+                        result.success(null)
+                    }
+                    "clearKeepScreenOn" -> {
+                        applyKeepScreenOn(false)
+                        result.success(null)
+                    }
+                    "canUseFullScreenIntent" -> result.success(canUseFullScreenIntent())
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    private fun applyShowWhenLocked(show: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(show)
+            setTurnScreenOn(show)
+        } else {
+            if (show) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
+            }
+        }
+    }
+
+    private fun applyTurnScreenOn(turnOn: Boolean) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setTurnScreenOn(turnOn)
+        } else {
+            if (turnOn) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+            } else {
+                window.clearFlags(WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON)
+            }
+        }
+    }
+
+    private fun applyKeepScreenOn(keepOn: Boolean) {
+        if (keepOn) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+    }
+
+    /// Whether the app is allowed to show full screen intents (alarms) over the
+    /// lock screen. On Android 14 and above, USE_FULL_SCREEN_INTENT has to be
+    /// granted manually for sideloaded apps.
+    private fun canUseFullScreenIntent(): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            return notificationManager.canUseFullScreenIntent()
+        }
+        // Before Android 14 the permission is granted automatically when declared
+        return true
     }
 }

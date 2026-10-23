@@ -775,5 +775,13 @@
   "arabicNumeral": "Arabic",
   "showDigitalClock": "Show digital clock",
   "backgroundServiceIntervalSetting": "Background service interval",
-  "backgroundServiceIntervalSettingDescription": "Lower interval will help keep the app alive, at the cost of some battery life"
+  "backgroundServiceIntervalSettingDescription": "Lower interval will help keep the app alive, at the cost of some battery life",
+  "muteAlarmButton": "Mute 30s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Muted",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Alarm missions might not show over the lock screen",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Alarms with missions won't pop up over the lock screen unless full screen alarms are allowed. Tap here to allow them in the notification settings.",
+  "@fullScreenIntentWarningDescription": {}
 }

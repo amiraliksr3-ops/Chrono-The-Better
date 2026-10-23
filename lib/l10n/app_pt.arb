@@ -794,5 +794,13 @@
   "numberOfPairsSetting": "Número de pares",
   "@numberOfPairsSetting": {},
   "useBackgroundServiceSettingDescription": "Pode ajudar a manter o aplicativo ativo em segundo plano",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "Silenciar 30s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Silenciado",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "As missões do alarme podem não aparecer na tela de bloqueio",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Alarmes com missões não aparecerão sobre a tela de bloqueio, a menos que alarmes em tela cheia sejam permitidos. Toque aqui para permiti-los nas configurações de notificações.",
+  "@fullScreenIntentWarningDescription": {}
 }

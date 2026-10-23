@@ -294,5 +294,13 @@
   "mathTask": "গানিতিক সমস্যাগুলো",
   "@mathTask": {},
   "mathEasyDifficulty": "সহজ (X + Y)",
-  "@mathEasyDifficulty": {}
+  "@mathEasyDifficulty": {},
+  "muteAlarmButton": "৩০ সেকেন্ডের জন্য নীরব করুন",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "নীরব",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "অ্যালার্মের মিশন লক স্ক্রিনে নাও দেখাতে পারে",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "পূর্ণস্ক্রিন অ্যালার্মের অনুমতি না থাকলে মিশনসহ অ্যালার্ম লক স্ক্রিনে দেখাবে না। বিজ্ঞপ্তি সেটিংসে অনুমতি দিতে এখানে ট্যাপ করুন।",
+  "@fullScreenIntentWarningDescription": {}
 }

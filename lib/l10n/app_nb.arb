@@ -78,5 +78,13 @@
   "risingVolumeSetting": "Økende lydstyrke",
   "@risingVolumeSetting": {},
   "snoozeLengthSetting": "Lengde",
-  "@snoozeLengthSetting": {}
+  "@snoozeLengthSetting": {},
+  "muteAlarmButton": "Demp i 30 s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Dempet",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Alarmoppgaver vises kanskje ikke på låseskjermen",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Alarmer med oppgaver vises ikke på låseskjermen med mindre fullskjermaler er tillatt. Trykk her for å tillate dem i varselinnstillingene.",
+  "@fullScreenIntentWarningDescription": {}
 }

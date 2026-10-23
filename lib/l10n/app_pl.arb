@@ -794,5 +794,13 @@
   "alarmRingInMessage": "Budzik zadzwoni za {duration}",
   "@alarmRingInMessage": {},
   "shortHoursString": "{hours} godz.",
-  "@shortHoursString": {}
+  "@shortHoursString": {},
+  "muteAlarmButton": "Wycisz na 30 s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Wyciszone",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Misje budzika mogą nie wyświetlać się na ekranie blokady",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Budziki z misjami nie będą wyświetlane na ekranie blokady, chyba że budziki pełnoekranowe są dozwolone. Dotknij tutaj, aby zezwolić na nie w ustawieniach powiadomień.",
+  "@fullScreenIntentWarningDescription": {}
 }

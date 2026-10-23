@@ -786,5 +786,13 @@
   "useBackgroundServiceSetting": "Utilizar el servicio en segundo plano",
   "@useBackgroundServiceSetting": {},
   "useBackgroundServiceSettingDescription": "Podría ayudar a mantener la aplicación activa en segundo plano",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "Silenciar 30 s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Silenciado",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Las misiones de alarma podrían no mostrarse en la pantalla de bloqueo",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Las alarmas con misiones no se mostrarán sobre la pantalla de bloqueo a menos que se permitan las alarmas de pantalla completa. Toca aquí para permitirlas en los ajustes de notificaciones.",
+  "@fullScreenIntentWarningDescription": {}
 }

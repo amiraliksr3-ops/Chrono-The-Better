@@ -794,5 +794,13 @@
   "useBackgroundServiceSetting": "Употреба позадинске услуге",
   "@useBackgroundServiceSetting": {},
   "useBackgroundServiceSettingDescription": "Може помоћи да апликација остане активна у позадини",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "Утишај 30 с",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Утишано",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Мисије аларма се можда неће приказивати на закључаном екрану",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Аларми са мисијама неће се приказивати на закључаном екрану ако аларми преко целог екрана нису дозвољени. Додирните овде да бисте их дозволили у подешавањима обавештења.",
+  "@fullScreenIntentWarningDescription": {}
 }

@@ -794,5 +794,13 @@
   "monthsString": "{count, plural, =0{} =1{1 mese} other{{count} mesi}}",
   "@monthsString": {},
   "yearsString": "{count, plural, =0{} =1{1 anno} other{{count} anni}}",
-  "@yearsString": {}
+  "@yearsString": {},
+  "muteAlarmButton": "Silenzia 30 s",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Silenziato",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Le missioni della sveglia potrebbero non essere visualizzate sulla schermata di blocco",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Le sveglie con missioni non verranno visualizzate sulla schermata di blocco a meno che le sveglie a schermo intero non siano consentite. Tocca qui per consentirle nelle impostazioni di notifica.",
+  "@fullScreenIntentWarningDescription": {}
 }

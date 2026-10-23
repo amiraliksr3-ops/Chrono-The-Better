@@ -794,5 +794,13 @@
   "useBackgroundServiceSettingDescription": "Може допомогти підтримувати програму у фоновому режимі",
   "@useBackgroundServiceSettingDescription": {},
   "useBackgroundServiceSetting": "Використовуйте фонову службу",
-  "@useBackgroundServiceSetting": {}
+  "@useBackgroundServiceSetting": {},
+  "muteAlarmButton": "Вимкнути звук на 30 с",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Звук вимкнено",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Завдання будильника можуть не відображатися на екрані блокування",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Будильники із завданнями не відображатимуться на екрані блокування, доки не дозволено повноекранні будильники. Торкніться тут, щоб дозволити їх у налаштуваннях сповіщень.",
+  "@fullScreenIntentWarningDescription": {}
 }

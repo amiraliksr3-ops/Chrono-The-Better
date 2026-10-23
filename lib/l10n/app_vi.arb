@@ -690,5 +690,13 @@
   "cannotDisableAlarmWhileSnoozedSnackbar": "Không thể tắt báo thức khi đang được báo lại",
   "@cannotDisableAlarmWhileSnoozedSnackbar": {},
   "startMelodyAtRandomPosDescription": "Giai điệu sẽ bắt đầu ở một vị trí ngẫu nhiên",
-  "@startMelodyAtRandomPosDescription": {}
+  "@startMelodyAtRandomPosDescription": {},
+  "muteAlarmButton": "Tắt tiếng 30 giây",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "Đã tắt tiếng",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "Nhiệm vụ báo thức có thể không hiện trên màn hình khóa",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "Báo thức có nhiệm vụ sẽ không hiện trên màn hình khóa trừ khi báo thức toàn màn hình được cho phép. Nhấn vào đây để cho phép trong cài đặt thông báo.",
+  "@fullScreenIntentWarningDescription": {}
 }

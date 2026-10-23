@@ -792,5 +792,13 @@
   "useBackgroundServiceSetting": "使用背景服務",
   "@useBackgroundServiceSetting": {},
   "useBackgroundServiceSettingDescription": "可能有助於讓應用程式在背景中保持運作",
-  "@useBackgroundServiceSettingDescription": {}
+  "@useBackgroundServiceSettingDescription": {},
+  "muteAlarmButton": "靜音 30 秒",
+  "@muteAlarmButton": {},
+  "mutedAlarmButton": "已靜音",
+  "@mutedAlarmButton": {},
+  "fullScreenIntentWarningTitle": "鬧鐘任務可能不會顯示在鎖定畫面上",
+  "@fullScreenIntentWarningTitle": {},
+  "fullScreenIntentWarningDescription": "除非允許全螢幕鬧鐘，否則帶任務的鬧鐘無法在鎖定畫面上彈出。點按此處以便在通知設定中允許。",
+  "@fullScreenIntentWarningDescription": {}
 }
