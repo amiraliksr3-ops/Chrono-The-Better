@@ -34,10 +34,9 @@ jobs:
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
-          printf 'keyPassword=%s
-storePassword=%s
-keyAlias=%s
-' "$KEY_PASSWORD" "$KEY_STORE_PASSWORD" "$KEY_ALIAS" > ./android/key.properties
+          echo "keyPassword=$KEY_PASSWORD" > ./android/key.properties
+          echo "storePassword=$KEY_STORE_PASSWORD" >> ./android/key.properties
+          echo "keyAlias=$KEY_ALIAS" >> ./android/key.properties
 
       - name: Load key
         env:
