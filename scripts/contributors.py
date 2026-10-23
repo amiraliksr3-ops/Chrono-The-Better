@@ -13,7 +13,9 @@ def fetch_contributors(repo_owner, repo_name):
 
 def download_avatar(contributor, output_dir):
     avatar_url = contributor['avatar_url']
-    avatar_name = f"{avatar_url.split('/')[-1]}.jpg"
+    # Strip the query string (e.g. "?v=4") from the URL: "?" is not a valid
+    # filename character on Windows and breaks checkouts there.
+    avatar_name = f"{avatar_url.split('/')[-1].split('?')[0]}.jpg"
     avatar_path = os.path.join(output_dir, avatar_name)    
     response = requests.get(avatar_url)
     # compress the image to 64 x 64

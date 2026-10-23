@@ -44,5 +44,6 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-# Agent tooling artifacts.agents/
+# Agent tooling artifacts
+.agents/
 skills-lock.json
