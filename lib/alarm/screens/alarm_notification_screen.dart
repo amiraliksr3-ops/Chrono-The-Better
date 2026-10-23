@@ -15,6 +15,8 @@ import 'package:clock_app/notifications/widgets/notification_actions/slide_notif
 import 'package:clock_app/settings/data/settings_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_fgbg/flutter_fgbg.dart';
+import 'package:flutter_show_when_locked/flutter_show_when_locked.dart';
+import 'package:clock_app/system/logic/screen_flags.dart';
 
 class AlarmNotificationScreen extends StatefulWidget {
   const AlarmNotificationScreen({
@@ -107,6 +109,11 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
 
     // Start a fresh mute session for this ringing screen
     AlarmMuteController.instance.reset(alarm.volume);
+
+    // Guarantee lock-screen presentation: the ringing screen must show over
+    // the lock screen and keep the display on, no matter which path opened it.
+    FlutterShowWhenLocked().show();
+    showOverLockScreen();
 
     // Pop the ringing screen back up over the home screen when minimized
     _fgbgSubscription = FGBGEvents.stream.listen(_onAppVisibilityChanged);
@@ -213,6 +220,13 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
                           ],
                         ),
                       ),
+                      // Mute progress line shown right above the mute button,
+                      // so no system UI (status bar) can cover it
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20.0),
+                        child: AlarmMuteBar(),
+                      ),
+                      const SizedBox(height: 6.0),
                       // Persistent mute button, shown on the ring screen and
                       // under every mission
                       const Padding(
@@ -227,13 +241,6 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
                     ],
                   ),
                 ),
-              ),
-              // Thick mute progress line pinned to the very top edge
-              const Positioned(
-                top: 0,
-                left: 0,
-                right: 0,
-                child: AlarmMuteBar(),
               ),
             ],
           ),

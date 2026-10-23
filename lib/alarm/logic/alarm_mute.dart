@@ -70,9 +70,12 @@ class AlarmMuteController extends ChangeNotifier {
       return;
     }
     _isMuted = true;
-    IsolateNameServer.lookupPortByName(alarmMutePortName)?.send(
-        ["mute", _effectiveMuteDuration.inSeconds, _targetVolume,
-            unmuteFadeDuration.inSeconds]);
+    IsolateNameServer.lookupPortByName(alarmMutePortName)?.send([
+      "mute",
+      _effectiveMuteDuration.inSeconds,
+      _targetVolume,
+      unmuteFadeDuration.inSeconds
+    ]);
     _restartCountdown();
   }
 
@@ -105,8 +108,8 @@ class AlarmMuteController extends ChangeNotifier {
     _countdownTimer = null;
     if (!_isMuted) return;
     _isMuted = false;
-    IsolateNameServer.lookupPortByName(alarmMutePortName)?.send(
-        ["unmute", _targetVolume, unmuteFadeDuration.inSeconds]);
+    IsolateNameServer.lookupPortByName(alarmMutePortName)
+        ?.send(["unmute", _targetVolume, unmuteFadeDuration.inSeconds]);
     notifyListeners();
   }
 

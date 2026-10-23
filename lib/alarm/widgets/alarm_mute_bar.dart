@@ -123,7 +123,8 @@ class _AlarmMuteButtonState extends State<AlarmMuteButton> {
         bool muted = controller.isMuted;
         return TextButton.icon(
           onPressed: () => controller.start(),
-          icon: Icon(muted ? Icons.volume_off_rounded : Icons.volume_up_rounded),
+          icon:
+              Icon(muted ? Icons.volume_off_rounded : Icons.volume_up_rounded),
           label: Text(muted
               ? "${AppLocalizations.of(context)!.mutedAlarmButton}"
                   " · ${controller.remainingSeconds} s"

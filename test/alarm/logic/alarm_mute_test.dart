@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:isolate';
 import 'dart:ui';
 
@@ -90,10 +89,12 @@ void main() {
     AlarmMuteController.debugMuteDuration = const Duration(seconds: 30);
     AlarmMuteController.instance.start();
 
-    await tester.pumpWidget(MaterialApp(
+    await tester.pumpWidget(const MaterialApp(
       home: Scaffold(
-        body: const Stack(
-          children: [Align(alignment: Alignment.topCenter, child: AlarmMuteBar())],
+        body: Stack(
+          children: [
+            Align(alignment: Alignment.topCenter, child: AlarmMuteBar())
+          ],
         ),
       ),
     ));

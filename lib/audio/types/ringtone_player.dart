@@ -42,8 +42,6 @@ class RingtonePlayer {
     await _play(ringtoneUri, vibrate: vibrate, loopMode: LoopMode.one);
   }
 
-
- 
   static Future<void> playAlarm(Alarm alarm,
       {LoopMode loopMode = LoopMode.one}) async {
     await activePlayer?.stop();
@@ -145,11 +143,17 @@ class RingtonePlayer {
     }
   }
 
-  /// Silences the alarm: stops the sound and cancels the vibration.
+  /// Silences the alarm sound and vibration. Keeps the player running at zero
+  /// volume instead of pausing it: resuming a paused player is not reliable on
+  /// every device/audio stream, so the alarm may never come back. Playing
+  /// silently and restoring the volume later always works.
   static Future<void> mute() async {
     _stopRisingVolume = true;
     _stopFadeIn = true;
-    await pause();
+    await activePlayer?.setVolume(0);
+    if (_vibratorIsAvailable) {
+      await Vibration.cancel();
+    }
   }
 
   /// Fades the alarm sound back in from silence to [targetVolume] (0.0 - 1.0)
@@ -160,19 +164,18 @@ class RingtonePlayer {
       _stopFadeIn = false;
       AudioPlayer? player = activePlayer;
       if (player == null) return;
-      await player.setVolume(0);
-      // If the player got into an idle state (e.g. the source was stopped),
-      // restore the last played ringtone before resuming.
+      // Defensive recovery: if the player got paused or stopped in the
+      // meantime, restart it. During a normal mute the player keeps playing
+      // at zero volume, so this is usually a no-op.
       if (player.processingState == ProcessingState.idle &&
           RingtoneManager.lastPlayedRingtoneUri.isNotEmpty) {
         await player.setAudioSource(
             AudioSource.uri(Uri.parse(RingtoneManager.lastPlayedRingtoneUri)));
       }
-      // Resume playback. The player is paused while muted, but play() is still
-      // a no-op safe way to guarantee sound continues if it's already playing.
       if (!player.playing) {
         await player.play();
       }
+      await player.setVolume(0);
       if (_vibratorIsAvailable && _vibrateOn) {
         Vibration.vibrate(pattern: [500, 1000], repeat: 0);
       }

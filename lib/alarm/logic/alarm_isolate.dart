@@ -57,7 +57,8 @@ void _armIsolateMuteTimer(int seconds) {
 @pragma('vm:entry-point')
 void triggerScheduledNotification(int scheduleId, Json params) async {
   FlutterError.onError = (FlutterErrorDetails details) {
-    logger.f("Error in triggerScheduledNotification isolate: ${details.exception.toString()}");
+    logger.f(
+        "Error in triggerScheduledNotification isolate: ${details.exception.toString()}");
   };
 
   logger.t(
@@ -201,8 +202,7 @@ void triggerAlarm(int scheduleId, Json params) async {
   */
   ReceivePort mutePort = ReceivePort();
   IsolateNameServer.removePortNameMapping(alarmMutePortName);
-  IsolateNameServer.registerPortWithName(
-      mutePort.sendPort, alarmMutePortName);
+  IsolateNameServer.registerPortWithName(mutePort.sendPort, alarmMutePortName);
   mutePort.listen((message) {
     handleAlarmMuteMessage(message);
   });
@@ -254,13 +254,15 @@ void handleAlarmMuteMessage(List<dynamic> message) {
       _isolateMuteTimer = null;
       // If the alarm was dismissed while muted, don't start it ringing again.
       if (!_alarmAudioActive) return;
-      RingtonePlayer.unmuteFade((message[1] as num) / 100, (message[2] as num).toInt());
+      RingtonePlayer.unmuteFade(
+          (message[1] as num) / 100, (message[2] as num).toInt());
       break;
   }
 }
 
 void stopAlarm(int scheduleId, AlarmStopAction action) async {
-  logger.i("[stopAlarm] Stopping alarm $scheduleId with action: ${action.name}");
+  logger
+      .i("[stopAlarm] Stopping alarm $scheduleId with action: ${action.name}");
   if (action == AlarmStopAction.snooze) {
     await updateAlarmById(scheduleId, (alarm) async => await alarm.snooze());
     // await createSnoozeNotification(scheduleId);
