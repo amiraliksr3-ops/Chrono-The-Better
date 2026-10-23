@@ -33,6 +33,13 @@ class AlarmMuteController extends ChangeNotifier {
   Timer? _countdownTimer;
   int _generation = 0;
 
+  /// Test-only override for the mute duration. Null by default, so production
+  /// always uses the real 30 second duration.
+  @visibleForTesting
+  static Duration? debugMuteDuration;
+
+  Duration get _effectiveMuteDuration => debugMuteDuration ?? muteDuration;
+
   /// Whether the alarm is currently muted.
   bool get isMuted => _isMuted;
 
@@ -45,19 +52,27 @@ class AlarmMuteController extends ChangeNotifier {
   double get remainingFraction {
     if (!_isMuted) return 0.0;
     double remaining = _muteEndTime.difference(DateTime.now()).inMilliseconds /
-        muteDuration.inMilliseconds;
+        _effectiveMuteDuration.inMilliseconds;
     return remaining.clamp(0.0, 1.0);
   }
+
+  /// Seconds left in the current mute countdown (0 while unmuted).
+  int get remainingSeconds =>
+      (remainingFraction * _effectiveMuteDuration.inSeconds).round();
 
   /// Silences the alarm sound and vibration. If the alarm is already muted,
   /// restarts the 30 second countdown instead.
   void start() {
     if (_isMuted) {
+      IsolateNameServer.lookupPortByName(alarmMutePortName)
+          ?.send(["renew", _targetVolume, _effectiveMuteDuration.inSeconds]);
       _restartCountdown();
       return;
     }
     _isMuted = true;
-    IsolateNameServer.lookupPortByName(alarmMutePortName)?.send(["mute"]);
+    IsolateNameServer.lookupPortByName(alarmMutePortName)?.send(
+        ["mute", _effectiveMuteDuration.inSeconds, _targetVolume,
+            unmuteFadeDuration.inSeconds]);
     _restartCountdown();
   }
 
@@ -66,6 +81,9 @@ class AlarmMuteController extends ChangeNotifier {
   /// If not muted, does nothing: interactions only matter while muted.
   void interact() {
     if (!_isMuted) return;
+    // Tell the alarm isolate to push its fallback deadline back as well.
+    IsolateNameServer.lookupPortByName(alarmMutePortName)
+        ?.send(["renew", _targetVolume, _effectiveMuteDuration.inSeconds]);
     _restartCountdown();
   }
 
@@ -93,11 +111,11 @@ class AlarmMuteController extends ChangeNotifier {
   }
 
   void _restartCountdown() {
-    _muteEndTime = DateTime.now().add(muteDuration);
+    _muteEndTime = DateTime.now().add(_effectiveMuteDuration);
     _generation++;
     _countdownTimer?.cancel();
     Timer? timer;
-    timer = Timer(muteDuration, () {
+    timer = Timer(_effectiveMuteDuration, () {
       // Ignore stale timers that fired after the countdown was restarted.
       if (_countdownTimer == timer) _unmute();
     });

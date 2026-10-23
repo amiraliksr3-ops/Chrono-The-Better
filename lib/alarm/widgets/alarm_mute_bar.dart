@@ -1,20 +1,19 @@
+import 'dart:async';
+
 import 'package:clock_app/alarm/logic/alarm_mute.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// The thickness of the mute progress line.
 const double _barThickness = 7.0;
 
-/// Duration it takes for the line to smoothly re-animate from its current
-/// position back to full width after a countdown restart.
-const Duration _refillDuration = Duration(milliseconds: 500);
-
 /// A thick solid line pinned to the very top edge of the alarm ringing screen.
 ///
-/// Its width equals the remaining mute time fraction and is driven by an
-/// [AnimationController], so that a mid-animation restart (mission interaction)
-/// smoothly re-animates the line from empty back to full. Shows no countdown
-/// numbers.
+/// Its width directly mirrors [AlarmMuteController.remainingFraction], which is
+/// repainted every frame by a [Ticker] while the alarm is muted, so the line
+/// drains smoothly and restarts at full width on every mission interaction.
+/// Shows no countdown numbers.
 class AlarmMuteBar extends StatefulWidget {
   const AlarmMuteBar({super.key});
 
@@ -24,54 +23,39 @@ class AlarmMuteBar extends StatefulWidget {
 
 class _AlarmMuteBarState extends State<AlarmMuteBar>
     with SingleTickerProviderStateMixin {
-  late final AnimationController _drainController;
-  int _lastGeneration = -1;
+  late final Ticker _ticker;
 
   @override
   void initState() {
     super.initState();
-    _drainController = AnimationController(
-      vsync: this,
-      duration: AlarmMuteController.muteDuration,
-    );
+    _ticker = createTicker(_onFrame);
     AlarmMuteController.instance.addListener(_onMuteChanged);
-    _lastGeneration = AlarmMuteController.instance.generation;
-    if (AlarmMuteController.instance.isMuted) {
-      _startDrainAnimation();
-    }
+    // The mute might already be active when this widget is mounted.
+    if (AlarmMuteController.instance.isMuted) _ticker.start();
   }
 
   void _onMuteChanged() {
     if (!mounted) return;
     if (!AlarmMuteController.instance.isMuted) {
-      // The mute ended: quickly drain the line to empty.
-      _drainController.stop();
-      _drainController.animateTo(1.0,
-          duration: const Duration(milliseconds: 300));
-      return;
+      _ticker.stop();
+    } else if (!_ticker.isActive) {
+      _ticker.start();
     }
-    if (AlarmMuteController.instance.generation != _lastGeneration) {
-      _lastGeneration = AlarmMuteController.instance.generation;
-      _startDrainAnimation();
-    }
+    setState(() {});
   }
 
-  Future<void> _startDrainAnimation() async {
-    _drainController.stop();
-    // Smoothly re-animate from the current position back to full width.
-    await _drainController.animateTo(0.0,
-        duration: _refillDuration, curve: Curves.easeOutCubic);
-    if (!mounted || !AlarmMuteController.instance.isMuted) return;
-    double remainingFraction = AlarmMuteController.instance.remainingFraction;
-    if (remainingFraction <= 0) return;
-    _drainController.duration = AlarmMuteController.muteDuration * remainingFraction;
-    _drainController.forward(from: 1.0 - remainingFraction);
+  void _onFrame(Duration elapsed) {
+    if (!AlarmMuteController.instance.isMuted) {
+      _ticker.stop();
+      return;
+    }
+    if (mounted) setState(() {});
   }
 
   @override
   void dispose() {
     AlarmMuteController.instance.removeListener(_onMuteChanged);
-    _drainController.dispose();
+    _ticker.dispose();
     super.dispose();
   }
 
@@ -80,28 +64,20 @@ class _AlarmMuteBarState extends State<AlarmMuteBar>
     ThemeData theme = Theme.of(context);
     ColorScheme colorScheme = theme.colorScheme;
 
-    return AnimatedBuilder(
-      animation: AlarmMuteController.instance,
-      builder: (context, child) {
-        bool muted = AlarmMuteController.instance.isMuted;
-        return AnimatedOpacity(
-          opacity: muted ? 1.0 : 0.0,
-          duration: const Duration(milliseconds: 200),
-          child: child!,
-        );
-      },
-      child: SizedBox(
-        height: _barThickness,
-        width: double.infinity,
-        child: AnimatedBuilder(
-          animation: _drainController,
-          builder: (context, _) => FractionallySizedBox(
-            alignment: Alignment.centerLeft,
-            widthFactor: 1.0 - _drainController.value,
-            child: Container(
-              color: colorScheme.primary,
-            ),
-          ),
+    if (!AlarmMuteController.instance.isMuted) {
+      return const SizedBox.shrink();
+    }
+    // Clamp guards against going negative right at the countdown's end.
+    double fraction =
+        AlarmMuteController.instance.remainingFraction.clamp(0.01, 1.0);
+    return SizedBox(
+      height: _barThickness,
+      width: double.infinity,
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: fraction,
+        child: Container(
+          color: colorScheme.primary,
         ),
       ),
     );
@@ -109,22 +85,48 @@ class _AlarmMuteBarState extends State<AlarmMuteBar>
 }
 
 /// The persistent mute button shown on the alarm ringing screen and under
-/// every mission. While muted, it reflects the muted state; tapping it again
-/// restarts the 30 second countdown.
-class AlarmMuteButton extends StatelessWidget {
+/// every mission. While muted, it shows "Muted · <seconds left>s" and ticking;
+/// tapping it again restarts the 30 second countdown.
+class AlarmMuteButton extends StatefulWidget {
   const AlarmMuteButton({super.key});
+
+  @override
+  State<AlarmMuteButton> createState() => _AlarmMuteButtonState();
+}
+
+class _AlarmMuteButtonState extends State<AlarmMuteButton> {
+  Timer? _uiTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ticks twice a second so the remaining seconds on the button stay live.
+    _uiTimer = Timer.periodic(const Duration(milliseconds: 500), (_) {
+      if (AlarmMuteController.instance.isMuted && mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _uiTimer?.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: AlarmMuteController.instance,
       builder: (context, _) {
-        bool muted = AlarmMuteController.instance.isMuted;
+        AlarmMuteController controller = AlarmMuteController.instance;
+        bool muted = controller.isMuted;
         return TextButton.icon(
-          onPressed: () => AlarmMuteController.instance.start(),
+          onPressed: () => controller.start(),
           icon: Icon(muted ? Icons.volume_off_rounded : Icons.volume_up_rounded),
           label: Text(muted
-              ? AppLocalizations.of(context)!.mutedAlarmButton
+              ? "${AppLocalizations.of(context)!.mutedAlarmButton}"
+                  " · ${controller.remainingSeconds} s"
               : AppLocalizations.of(context)!.muteAlarmButton),
         );
       },

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clock_app/alarm/logic/alarm_mute.dart';
 import 'package:clock_app/alarm/utils/alarm_id.dart';
 import 'package:clock_app/alarm/types/alarm.dart';
@@ -12,6 +14,7 @@ import 'package:clock_app/navigation/types/alignment.dart';
 import 'package:clock_app/notifications/widgets/notification_actions/slide_notification_action.dart';
 import 'package:clock_app/settings/data/settings_schema.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_fgbg/flutter_fgbg.dart';
 
 class AlarmNotificationScreen extends StatefulWidget {
   const AlarmNotificationScreen({
@@ -37,6 +40,34 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
   late Widget _currentWidget;
   late int _currentIndex = widget.initialIndex;
   late Widget actionWidget;
+  StreamSubscription<FGBGType>? _fgbgSubscription;
+
+  /// Whether the alarm handled by this screen is still ringing. Used to only
+  /// pop the screen back up over the home screen while the alarm is active.
+  bool _stillRinging = true;
+
+  /// When the user minimizes the app (or turns the screen off) while the alarm
+  /// is ringing, re-post the full screen intent notification. Android shows it
+  /// as a full screen launch, popping the ringing screen back up over the
+  /// home screen.
+  void _onAppVisibilityChanged(FGBGType event) {
+    if (event != FGBGType.background || !_stillRinging) return;
+    DateTime? time = alarm.currentScheduleDateTime;
+    String timeString = time == null
+        ? ""
+        : "${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}";
+    showAlarmNotification(
+      type: ScheduledNotificationType.alarm,
+      scheduleIds: [widget.scheduleId],
+      showSnoozeButton: alarm.canBeSnoozed,
+      tasksRequired: alarm.tasks.isNotEmpty,
+      title: alarm.label.isEmpty ? "Alarm Ringing..." : alarm.label,
+      body: timeString,
+      snoozeActionLabel: "Snooze",
+      dismissActionLabel: "Dismiss",
+    );
+  }
+
   void _setNextWidget() {
     setState(() {
       if (_currentIndex < 0) {
@@ -44,6 +75,7 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
         _currentWidget = actionWidget;
       } else if (_currentIndex >= alarm.tasks.length) {
         AlarmMuteController.instance.cancel();
+        _stillRinging = false;
         if (widget.onPop != null) {
           widget.onPop!();
           Navigator.of(context).pop(true);
@@ -76,6 +108,9 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
     // Start a fresh mute session for this ringing screen
     AlarmMuteController.instance.reset(alarm.volume);
 
+    // Pop the ringing screen back up over the home screen when minimized
+    _fgbgSubscription = FGBGEvents.stream.listen(_onAppVisibilityChanged);
+
     try {
       actionWidget = appSettings
           .getGroup("Alarm")
@@ -97,7 +132,15 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
     _setNextWidget();
   }
 
+  @override
+  void dispose() {
+    _fgbgSubscription?.cancel();
+    _fgbgSubscription = null;
+    super.dispose();
+  }
+
   void _snoozeAlarm() {
+    _stillRinging = false;
     AlarmMuteController.instance.cancel();
     dismissAlarmNotification(widget.scheduleId, AlarmDismissType.snooze,
         ScheduledNotificationType.alarm);

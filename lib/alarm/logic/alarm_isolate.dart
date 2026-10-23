@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:isolate';
 import 'dart:ui';
@@ -29,6 +30,29 @@ const String alarmMutePortName = "alarmMutePort";
 /// isolate. Used to ignore unmute messages that arrive after the alarm was
 /// already dismissed, so a stopped alarm doesn't start ringing again.
 bool _alarmAudioActive = false;
+
+/// Whether the alarm isolate currently has an active mute session.
+bool _isolateMuteActive = false;
+
+/// Target volume (0.0 - 1.0) and fade duration for the current mute session.
+double _isolateMuteTargetVolume = 1.0;
+int _isolateMuteFadeSeconds = 5;
+
+/// Fallback countdown owned by THIS isolate, so the alarm still fades back in
+/// even if the "unmute" message from the main isolate is delayed or dropped.
+Timer? _isolateMuteTimer;
+
+void _armIsolateMuteTimer(int seconds) {
+  _isolateMuteTimer?.cancel();
+  _isolateMuteTimer = Timer(Duration(seconds: seconds), () {
+    // Only unmute if no unmute message arrived before the deadline.
+    if (!_isolateMuteActive || !_alarmAudioActive) return;
+    _isolateMuteActive = false;
+    _isolateMuteTimer = null;
+    RingtonePlayer.unmuteFade(_isolateMuteTargetVolume,
+        _isolateMuteFadeSeconds > 0 ? _isolateMuteFadeSeconds : 1);
+  });
+}
 
 @pragma('vm:entry-point')
 void triggerScheduledNotification(int scheduleId, Json params) async {
@@ -81,6 +105,9 @@ void stopScheduledNotification(List<dynamic> message) {
       ScheduledNotificationType.values.byName(message[1]);
 
   if (notificationType == ScheduledNotificationType.alarm) {
+    _isolateMuteActive = false;
+    _isolateMuteTimer?.cancel();
+    _isolateMuteTimer = null;
     _alarmAudioActive = false;
     stopAlarm(scheduleId, action);
   } else if (notificationType == ScheduledNotificationType.timer) {
@@ -201,14 +228,34 @@ void setVolume(double volume) {
 }
 
 void handleAlarmMuteMessage(List<dynamic> message) {
-  if (message[0] == "mute") {
-    RingtonePlayer.mute();
-  } else if (message[0] == "unmute") {
-    // If the alarm was dismissed while muted, don't start it ringing again.
-    // lookupPortByName also returns null in that case on the other side, but
-    // the countdown can expire between the dismissal and the port removal.
-    if (!_alarmAudioActive) return;
-    RingtonePlayer.unmuteFade(message[1] / 100, message[2]);
+  switch (message[0]) {
+    case "mute":
+      // Message format: ["mute", rangeSeconds, targetVolume(0-100), fadeSeconds]
+      _isolateMuteActive = true;
+      _isolateMuteTargetVolume = (message[2] as num) / 100;
+      _isolateMuteFadeSeconds = (message[3] as num).toInt();
+      RingtonePlayer.mute();
+      // The isolate owns a fallback countdown: even if the "unmute" message
+      // from the main isolate is dropped, the alarm still fades back in.
+      _armIsolateMuteTimer((message[1] as num).toInt());
+      break;
+    case "renew":
+      // Message format: ["renew", targetVolume(0-100), rangeSeconds]
+      // Mission interaction extends the mute: push the fallback deadline back.
+      _isolateMuteTargetVolume = (message[1] as num) / 100;
+      if (_isolateMuteActive) {
+        _armIsolateMuteTimer((message[2] as num).toInt());
+      }
+      break;
+    case "unmute":
+      // Message format: ["unmute", targetVolume(0-100), fadeSeconds]
+      _isolateMuteActive = false;
+      _isolateMuteTimer?.cancel();
+      _isolateMuteTimer = null;
+      // If the alarm was dismissed while muted, don't start it ringing again.
+      if (!_alarmAudioActive) return;
+      RingtonePlayer.unmuteFade((message[1] as num) / 100, (message[2] as num).toInt());
+      break;
   }
 }
 

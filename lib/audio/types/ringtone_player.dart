@@ -158,8 +158,21 @@ class RingtonePlayer {
   static Future<void> unmuteFade(double targetVolume, int seconds) async {
     try {
       _stopFadeIn = false;
-      await activePlayer?.setVolume(0);
-      await activePlayer?.play();
+      AudioPlayer? player = activePlayer;
+      if (player == null) return;
+      await player.setVolume(0);
+      // If the player got into an idle state (e.g. the source was stopped),
+      // restore the last played ringtone before resuming.
+      if (player.processingState == ProcessingState.idle &&
+          RingtoneManager.lastPlayedRingtoneUri.isNotEmpty) {
+        await player.setAudioSource(
+            AudioSource.uri(Uri.parse(RingtoneManager.lastPlayedRingtoneUri)));
+      }
+      // Resume playback. The player is paused while muted, but play() is still
+      // a no-op safe way to guarantee sound continues if it's already playing.
+      if (!player.playing) {
+        await player.play();
+      }
       if (_vibratorIsAvailable && _vibrateOn) {
         Vibration.vibrate(pattern: [500, 1000], repeat: 0);
       }
