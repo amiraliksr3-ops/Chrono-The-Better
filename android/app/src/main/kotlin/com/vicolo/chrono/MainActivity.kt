@@ -2,6 +2,7 @@ package com.vicolo.chrono
 
 import android.app.NotificationManager
 import android.content.Context
+import android.media.AudioManager
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -46,6 +47,11 @@ class MainActivity: FlutterActivity() {
                     "canUseFullScreenIntent" -> result.success(canUseFullScreenIntent())
                     "openFullScreenIntentSettings" -> {
                         openFullScreenIntentSettings()
+                        result.success(null)
+                    }
+                    "setSystemVolume" -> {
+                        val percent = call.argument<Double>("percent") ?: 100.0
+                        setSystemVolume(percent)
                         result.success(null)
                     }
                     else -> result.notImplemented()
@@ -103,6 +109,18 @@ class MainActivity: FlutterActivity() {
     /// app, or the app notification settings on older versions. Without this
     /// permission, alarms can only appear as heads-up notifications instead of
     /// taking over a locked or sleeping screen.
+    private fun setSystemVolume(percent: Double) {
+        try {
+            val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            val stream = AudioManager.STREAM_MUSIC
+            val max = am.getStreamMaxVolume(stream)
+            val target = (percent / 100.0 * max).toInt().coerceIn(0, max)
+            am.setStreamVolume(stream, target, 0)
+        } catch (e: Exception) {
+            // ignore
+        }
+    }
+
     private fun openFullScreenIntentSettings() {
         val appNotificationSettings = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
             .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
