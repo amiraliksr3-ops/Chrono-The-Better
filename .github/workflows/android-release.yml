@@ -62,6 +62,19 @@ jobs:
       - name: Build APK
         run: flutter build apk --release --split-per-abi --flavor prod
 
+      - name: Prepare release artifacts
+        run: |
+          # The Flutter CLI renames built APKs into
+          # build/app/outputs/flutter-apk/app-<abi>-prod-release.apk. Copy them
+          # under the final release names instead: baells.chrono-<abi>.apk
+          mkdir -p out
+          for f in build/app/outputs/flutter-apk/*.apk; do
+            base=$(basename "$f")
+            abi=$(echo "$base" | sed -E 's/^app-([^-]+)-[^-]+-release\.apk$/\1/')
+            cp "$f" "out/baells.chrono-${abi}.apk"
+          done
+          cp build/app/outputs/bundle/release/*.aab out/baells.chrono.aab
+
       - name: Build Changelog
         id: github_release
         uses: mikepenz/release-changelog-builder-action@v5
@@ -95,7 +108,7 @@ jobs:
       - name: Create Github Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "build/app/outputs/bundle/release/*.aab,build/app/outputs/flutter-apk/*.apk"
+          artifacts: "out/baells.chrono-*.apk,out/baells.chrono.aab"
           body: ${{steps.github_release.outputs.changelog}}
           draft: true
 
