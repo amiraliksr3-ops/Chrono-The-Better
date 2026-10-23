@@ -16,7 +16,11 @@ by vicolo-dev, with additional tweaks. Note: this fork is a WIP — test it thor
 your device before relying on it for critical alarms.
 
 ## Changes over upstream
-- 30-second alarm mute with mission-interaction countdown
+- 30-second alarm mute with mission-interaction countdown, with the mute bar and
+  button at the top of the ringing screen
+- Alarm volume preview plays at the selected volume
+- Full-screen alarm screen wakes the display and appears over the lock screen,
+  including when the phone is locked with the screen off
 - Hardened full-screen alarm: harder to accidentally dismiss from lock screen
 - Fixed signed release builds and CI release workflow (APKs published per release)
 

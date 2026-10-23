@@ -19,6 +19,7 @@ import 'package:clock_app/timer/logic/update_timers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_boot_receiver/flutter_boot_receiver.dart';
 import 'package:flutter_show_when_locked/flutter_show_when_locked.dart';
+import 'package:receive_intent/receive_intent.dart' hide Intent;
 import 'package:timezone/data/latest_all.dart';
 
 void main() async {
@@ -29,6 +30,18 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   initializeTimeZones();
+
+  // When a notification (including a full-screen alarm intent) launched the
+  // app, keep the manifest's show-when-locked / turn-screen-on flags instead
+  // of clearing them before the ringing screen has a chance to appear.
+  bool launchedFromNotification = false;
+  try {
+    final initialIntent = await ReceiveIntent.getInitialIntent();
+    launchedFromNotification = initialIntent?.action == "SELECT_NOTIFICATION";
+  } catch (_) {
+    // Not available on this platform; normal startup behavior applies.
+  }
+
   final initializeData = [
     initializePackageInfo(),
     initializeAndroidInfo(),
@@ -38,7 +51,7 @@ void main() async {
     BootReceiver.initialize(handleBoot),
     RingtonePlayer.initialize(),
     initializeAudioSession(),
-    FlutterShowWhenLocked().hide(),
+    if (!launchedFromNotification) FlutterShowWhenLocked().hide(),
   ];
   await Future.wait(initializeData);
 

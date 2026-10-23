@@ -47,8 +47,14 @@ class _VolumePreviewButtonState extends State<VolumePreviewButton> {
           .getSetting("Melody") as DynamicSelectSetting;
       FileItem melody = melodySetting.value as FileItem;
       String uri = await getRingtoneUri(melody);
-      await RingtonePlayer.playUri(uri, vibrate: false);
-      await RingtonePlayer.setVolume(widget.volumeSetting.value / 100);
+      // Pass the volume before playback starts. Setting it afterwards let the
+      // first moments of the preview play at 100% and could be missed entirely
+      // on slow devices.
+      await RingtonePlayer.playUri(
+        uri,
+        vibrate: false,
+        volume: widget.volumeSetting.value / 100,
+      );
       if (mounted) {
         setState(() {
           _playing = true;

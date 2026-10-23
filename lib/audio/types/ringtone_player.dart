@@ -37,9 +37,21 @@ class RingtonePlayer {
   static Future<void> playUri(String ringtoneUri,
       {bool vibrate = false,
       LoopMode loopMode = LoopMode.one,
-      AndroidAudioUsage channel = AndroidAudioUsage.alarm}) async {
+      AndroidAudioUsage channel = AndroidAudioUsage.alarm,
+      double volume = 1.0}) async {
     activePlayer = _mediaPlayer;
-    await _play(ringtoneUri, vibrate: vibrate, loopMode: LoopMode.one);
+    // Preview the file on the alarm stream, so the preview sounds like the
+    // actual alarm (and obeys the same system stream).
+    await activePlayer?.setAndroidAudioAttributes(AndroidAudioAttributes(
+      usage: channel,
+      contentType: AndroidAudioContentType.music,
+    ));
+    await _play(
+      ringtoneUri,
+      vibrate: vibrate,
+      loopMode: loopMode,
+      volume: volume,
+    );
   }
 
   static Future<void> playAlarm(Alarm alarm,

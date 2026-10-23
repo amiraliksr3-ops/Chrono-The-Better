@@ -171,73 +171,80 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
                 child: SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if (_currentIndex <= 0)
-                        Expanded(
-                          flex: 2,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: Column(
-                              children: [
-                                const Spacer(),
-                                if (alarm.label.isNotEmpty)
-                                  Text(
-                                    alarm.label,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .displayMedium,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                const SizedBox(height: 8),
-                                const DigitalClock(
-                                  // dateTime: Date,
-                                  horizontalAlignment: ElementAlignment.center,
-                                  shouldShowDate: false,
-                                  shouldShowSeconds: false,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  "Alarm",
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      Expanded(
-                        flex: 2,
+                      // Mute controls live at the top of the screen, below the
+                      // status bar, so they never compete with the dismiss
+                      // action at the bottom.
+                      const SafeArea(
+                        bottom: false,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            _currentWidget,
+                            // Full-width mute progress line pinned to the top.
+                            const AlarmMuteBar(),
+                            const SizedBox(height: 4.0),
+                            // Persistent mute button, shown on the ring screen
+                            // and under every mission.
+                            const AlarmMuteButton(),
+                            const SizedBox(height: 4.0),
                           ],
                         ),
                       ),
-                      // Mute progress line shown right above the mute button,
-                      // so no system UI (status bar) can cover it
-                      const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.0),
-                        child: AlarmMuteBar(),
+                      Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            if (_currentIndex <= 0)
+                              Expanded(
+                                flex: 2,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20.0),
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+                                      if (alarm.label.isNotEmpty)
+                                        Text(
+                                          alarm.label,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .displayMedium,
+                                          textAlign: TextAlign.center,
+                                          maxLines: 3,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      const SizedBox(height: 8),
+                                      const DigitalClock(
+                                        // dateTime: Date,
+                                        horizontalAlignment:
+                                            ElementAlignment.center,
+                                        shouldShowDate: false,
+                                        shouldShowSeconds: false,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "Alarm",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineMedium,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            Expanded(
+                              flex: 2,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  _currentWidget,
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 6.0),
-                      // Persistent mute button, shown on the ring screen and
-                      // under every mission
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 8.0),
-                        child: AlarmMuteButton(),
-                      ),
-                      // if (!alarm.maxSnoozeIsReached)
-                      //   TextButton(
-                      //     onPressed: _snoozeAlarm,
-                      //     child: const Text("Snooze"),
-                      //   ),
                     ],
                   ),
                 ),

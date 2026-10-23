@@ -1,5 +1,5 @@
-import 'package:app_settings/app_settings.dart';
 import 'package:clock_app/common/widgets/card_container.dart';
+import 'package:clock_app/system/logic/screen_flags.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -25,8 +25,9 @@ class FullScreenIntentBanner extends StatelessWidget {
       child: CardContainer(
         color: colorScheme.errorContainer,
         margin: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-        onTap: () => AppSettings.openAppSettings(
-            type: AppSettingsType.notification),
+        // Jump straight to the full-screen notification access page instead
+        // of the generic notification settings.
+        onTap: openFullScreenIntentSettings,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(

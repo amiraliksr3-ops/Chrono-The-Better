@@ -2,7 +2,10 @@ package com.vicolo.chrono
 
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -41,6 +44,10 @@ class MainActivity: FlutterActivity() {
                         result.success(null)
                     }
                     "canUseFullScreenIntent" -> result.success(canUseFullScreenIntent())
+                    "openFullScreenIntentSettings" -> {
+                        openFullScreenIntentSettings()
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
@@ -90,5 +97,27 @@ class MainActivity: FlutterActivity() {
         }
         // Before Android 14 the permission is granted automatically when declared
         return true
+    }
+
+    /// Opens the Android 14+ "full-screen notifications" access page for this
+    /// app, or the app notification settings on older versions. Without this
+    /// permission, alarms can only appear as heads-up notifications instead of
+    /// taking over a locked or sleeping screen.
+    private fun openFullScreenIntentSettings() {
+        val appNotificationSettings = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+            .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+        val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            Intent(
+                Settings.ACTION_MANAGE_APP_USE_FULL_SCREEN_INTENT,
+                Uri.parse("package:$packageName")
+            )
+        } else {
+            appNotificationSettings
+        }
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            startActivity(appNotificationSettings)
+        }
     }
 }

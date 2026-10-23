@@ -26,6 +26,11 @@ const String updatePortName = "updatePort";
 const String setAlarmVolumePortName = "setAlarmVolumePort";
 const String alarmMutePortName = "alarmMutePort";
 
+/// Sent over [updatePortName] when an alarm starts ringing, so the UI isolate
+/// can open the ringing screen immediately when the app is already alive.
+/// (When the app is not running, the full screen intent notification opens it.)
+const String alarmRingingPortMessagePrefix = "alarmRinging:";
+
 /// Whether alarm audio is currently playing (or intentionally muted) in this
 /// isolate. Used to ignore unmute messages that arrive after the alarm was
 /// already dismissed, so a stopped alarm doesn't start ringing again.
@@ -221,6 +226,12 @@ void triggerAlarm(int scheduleId, Json params) async {
     snoozeActionLabel: "Snooze",
     dismissActionLabel: "Dismiss",
   );
+
+  // If the UI isolate is alive, ask it to open the ringing screen right away.
+  // This covers the case where the app is already in the foreground and the
+  // system decides not to launch the full screen intent.
+  IsolateNameServer.lookupPortByName(updatePortName)
+      ?.send("$alarmRingingPortMessagePrefix$scheduleId");
 }
 
 void setVolume(double volume) {

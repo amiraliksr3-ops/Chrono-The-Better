@@ -37,6 +37,17 @@ Future<bool> canUseFullScreenIntent() async {
   }
 }
 
+/// Opens the system page where full-screen notifications can be allowed.
+/// On Android 14+ this is a dedicated "full-screen notifications" switch for
+/// the app, which is required for alarms to take over the lock screen.
+Future<void> openFullScreenIntentSettings() async {
+  try {
+    await _channel.invokeMethod("openFullScreenIntentSettings");
+  } catch (e) {
+    logger.e("Error opening full screen intent settings: $e");
+  }
+}
+
 Future<void> _invokeEach(List<String> methods) async {
   for (String method in methods) {
     try {
