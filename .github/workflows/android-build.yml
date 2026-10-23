@@ -28,24 +28,14 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Create key.properties
-        run: |
-          echo keyPassword=\${{ secrets.KEY_PASSWORD }} > ./android/key.properties
-          echo storePassword=\${{ secrets.KEY_STORE_PASSWORD }} >> ./android/key.properties
-          echo keyAlias=\${{ secrets.KEY_ALIAS }} >> ./android/key.properties
-
-      - name: Load key
-        run: echo "${{ secrets.KEYSTORE_JKS_RELEASE }}" | base64 --decode > android/app/release-key.jks
-
       - name: Turn off analytics
         run: flutter config --no-analytics
 
       - name: Pub Get Packages
         run: flutter pub get
 
-    
       - name: Build APK
-        run: flutter build apk --release --split-per-abi --flavor dev
+        run: flutter build apk --debug
 
       - name: Save APKs to Artifacts
         uses: actions/upload-artifact@v4
