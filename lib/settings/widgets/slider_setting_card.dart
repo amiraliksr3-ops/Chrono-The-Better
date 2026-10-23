@@ -30,6 +30,8 @@ class _SliderSettingCardState extends State<SliderSettingCard> {
       max: widget.setting.max,
       unit: widget.setting.unit,
       snapLength: widget.setting.snapLength,
+      trailing:
+          widget.setting.previewActionBuilder?.call(context, widget.setting),
       onChanged: (value) {
         setState(() {
           widget.setting.setValue(context, value);

@@ -415,6 +415,12 @@ class SliderSetting extends Setting<double> {
   final double? snapLength;
   final String unit;
 
+  /// Optional builder for a widget (e.g. a play button) shown next to the
+  /// slider, for previewing the effect of the value. Also receives the setting
+  /// itself, so the preview can read the current value via [Setting.value].
+  final Widget Function(BuildContext context, Setting setting)?
+      previewActionBuilder;
+
   SliderSetting(
     String name,
     String Function(BuildContext) getLocalizedName,
@@ -427,6 +433,7 @@ class SliderSetting extends Setting<double> {
     this.maxIsInfinity = false,
     this.snapLength,
     this.unit = "",
+    this.previewActionBuilder,
     List<EnableConditionParameter> enableConditions = const [],
     List<String> searchTags = const [],
   }) : super(name, getLocalizedName, getDescription, defaultValue, onChange,
@@ -450,6 +457,7 @@ class SliderSetting extends Setting<double> {
       maxIsInfinity: maxIsInfinity,
       enableConditions: enableConditions,
       unit: unit,
+      previewActionBuilder: previewActionBuilder,
       isVisual: isVisual,
       searchTags: searchTags,
     );

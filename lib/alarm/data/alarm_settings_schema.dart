@@ -9,6 +9,7 @@ import 'package:clock_app/alarm/types/schedules/range_alarm_schedule.dart';
 import 'package:clock_app/alarm/types/schedules/weekly_alarm_schedule.dart';
 import 'package:clock_app/alarm/widgets/alarm_task_card.dart';
 import 'package:clock_app/alarm/widgets/try_alarm_task_button.dart';
+import 'package:clock_app/alarm/widgets/volume_preview_button.dart';
 import 'package:clock_app/audio/audio_channels.dart';
 import 'package:clock_app/audio/screens/ringtones_screen.dart';
 import 'package:clock_app/audio/types/ringtone_player.dart';
@@ -193,7 +194,9 @@ SettingGroup alarmSettingsSchema = SettingGroup(
                 0,
                 100,
                 100,
-                unit: "%"),
+                unit: "%",
+                previewActionBuilder: (context, setting) => VolumePreviewButton(
+                    volumeSetting: setting as SliderSetting)),
             SliderSetting(
               "task_volume",
               (context) => AppLocalizations.of(context)!.volumeWhileTasks,

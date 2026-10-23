@@ -85,7 +85,16 @@ android {
         def abi = output.getFilter(OutputFile.ABI)
         if (abi != null) {  // null for the universal-debug, universal-release variants
             output.versionCodeOverride =
-                    variant.versionCode * 10 + versionCodes.get(abi)}
+                    variant.versionCode * 10 + versionCodes.get(abi)
+        }
+        // Rename release APKs to "baells.chrono-<abi>.apk"
+        def apkName = "baells.chrono"
+        if (abi != null) {
+            apkName += "-" + abi
+        } else {
+            apkName += "-universal"
+        }
+        output.outputFileName = new File(apkName + ".apk")
       }
     }
 

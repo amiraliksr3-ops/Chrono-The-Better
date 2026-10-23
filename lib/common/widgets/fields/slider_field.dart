@@ -12,7 +12,8 @@ class SliderField extends StatefulWidget {
       required this.title,
       this.unit = '',
       this.snapLength,
-      this.description = ''});
+      this.description = '',
+      this.trailing});
 
   final String title;
   final String description;
@@ -22,6 +23,10 @@ class SliderField extends StatefulWidget {
   final String unit;
   final double? snapLength;
   final void Function(double value) onChanged;
+
+  /// Optional widget (e.g. a preview play button) placed at the end of the
+  /// slider row.
+  final Widget? trailing;
 
   @override
   State<SliderField> createState() => _SliderFieldState();
@@ -175,6 +180,7 @@ class _SliderFieldState extends State<SliderField> {
                 ),
               ),
               const SizedBox(width: 10),
+              if (widget.trailing != null) widget.trailing!,
               // const Spacer(),
             ],
           )
