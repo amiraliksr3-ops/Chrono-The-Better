@@ -200,15 +200,6 @@ SettingGroup alarmSettingsSchema = SettingGroup(
 
                 previewActionBuilder: (context, setting) => VolumePreviewButton(
                     volumeSetting: setting as SliderSetting)),
-            SliderSetting(
-              "task_volume",
-              (context) => AppLocalizations.of(context)!.volumeWhileTasks,
-              0,
-              100,
-              50,
-              unit: "%",
-              getDescription: (context) => "Percentage of base volume",
-            ),
             SwitchSetting(
               "Rising Volume",
               (context) => AppLocalizations.of(context)!.risingVolumeSetting,
@@ -224,14 +215,6 @@ SettingGroup alarmSettingsSchema = SettingGroup(
                 enableConditions: [
                   ValueCondition(["Rising Volume"], (value) => value == true)
                 ]),
-            SelectSetting<AndroidAudioUsage>(
-              "Audio Channel",
-              (context) => AppLocalizations.of(context)!.audioChannelSetting,
-              audioChannelOptions,
-              onChange: (context, index) {
-                RingtonePlayer.stop();
-              },
-            ),
           ],
         ),
         SwitchSetting("Vibration",

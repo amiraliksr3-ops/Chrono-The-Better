@@ -70,6 +70,7 @@ class _VolumePreviewButtonState extends State<VolumePreviewButton> {
     return IconButton(
       onPressed: _toggle,
       icon: Icon(_playing ? Icons.stop_rounded : Icons.play_arrow_rounded),
+      color: Colors.redAccent,
       tooltip: null,
       splashRadius: 20.0,
     );
