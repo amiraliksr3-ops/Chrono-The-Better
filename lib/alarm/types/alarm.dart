@@ -83,6 +83,16 @@ class Alarm extends CustomizableListItem {
       _settings.getSetting("start_melody_at_random_pos").value;
   bool get vibrate => _settings.getSetting("Vibration").value;
   double get volume => _settings.getSetting("Volume").value;
+  /// Whether this alarm is silenced by the app's own mute switch. Muting is
+  /// handled entirely in the app: Android's alarm volume is left untouched,
+  /// so it never affects the system, other alarms or timers.
+  bool get isMuted => _settings.getSetting("Mute").value;
+  /// The player's own volume (0-100) while this alarm rings. The Volume
+  /// slider moves Android's alarm volume instead of scaling playback, so
+  /// ringing runs at the player's full volume — or in silence when this
+  /// alarm is muted, which the app does itself because Android's alarm
+  /// channel has no 0% to ask for.
+  double get playbackVolume => isMuted ? 0.0 : 100.0;
   double get snoozeLength => _settings.getSetting("Length").value;
   List<AlarmTask> get tasks => _settings.getSetting("Tasks").value;
   List<Tag> get tags => _settings.getSetting("Tags").value;
@@ -416,6 +426,13 @@ class Alarm extends CustomizableListItem {
           .settingItems,
     );
     _settings.loadValueFromJson(json['settings']);
+    // Older versions let the volume slider reach 0%, which meant a silent
+    // alarm. The slider now only holds Android's own steps (14% and up) and
+    // muting lives in its own switch, so carry that silence over as a mute.
+    if (volume <= 0) {
+      _settings.getSetting("Volume").setValueWithoutNotify(100.0);
+      _settings.getSetting("Mute").setValueWithoutNotify(true);
+    }
     _schedules = [
       OnceAlarmSchedule.fromJson(json['schedules'][0]),
       DailyAlarmSchedule.fromJson(json['schedules'][1]),

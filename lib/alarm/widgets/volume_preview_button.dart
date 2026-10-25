@@ -6,8 +6,10 @@ import 'package:clock_app/settings/types/setting.dart';
 import 'package:flutter/material.dart';
 
 /// A play/stop button shown next to the alarm volume slider. It previews the
-/// alarm sound of the currently selected melody at the slider's current
-/// volume, so the user can hear exactly how loud the alarm will ring.
+/// alarm sound of the currently selected melody, so the user can hear exactly
+/// how the alarm will ring: at full player volume (the volume itself comes
+/// from Android's alarm stream, which the slider moves), or silent while the
+/// alarm is muted, in which case it still vibrates if the alarm vibrates.
 class VolumePreviewButton extends StatefulWidget {
   const VolumePreviewButton({
     super.key,
@@ -32,6 +34,21 @@ class _VolumePreviewButtonState extends State<VolumePreviewButton> {
     super.dispose();
   }
 
+  /// Reads a switch setting that sits next to the volume slider: "Mute" is in
+  /// the same group as the slider, "Vibration" one level up (see
+  /// alarm_settings_schema.dart). A setting that can't be found counts as off.
+  bool _siblingSwitchValue(String name, {bool oneLevelUp = false}) {
+    try {
+      final group = oneLevelUp
+          ? widget.volumeSetting.parent!.parent!
+          : widget.volumeSetting.parent!;
+      return group.getSetting(name).value as bool;
+    } catch (e) {
+      logger.e("Could not read the $name setting while previewing: $e");
+      return false;
+    }
+  }
+
   Future<void> _toggle() async {
     if (_playing) {
       await RingtonePlayer.stop();
@@ -49,11 +66,15 @@ class _VolumePreviewButtonState extends State<VolumePreviewButton> {
       String uri = await getRingtoneUri(melody);
       // Pass the volume before playback starts. Setting it afterwards let the
       // first moments of the preview play at 100% and could be missed entirely
-      // on slow devices.
+      // on slow devices. Android's alarm stream holds the real volume, so the
+      // player itself only has to decide between full volume and silence.
+      final bool muted = _siblingSwitchValue("Mute");
+      final bool vibrate =
+          _siblingSwitchValue("Vibration", oneLevelUp: true);
       await RingtonePlayer.playUri(
         uri,
-        vibrate: false,
-        volume: widget.volumeSetting.value / 100,
+        vibrate: muted && vibrate,
+        volume: muted ? 0.0 : 1.0,
       );
       if (mounted) {
         setState(() {

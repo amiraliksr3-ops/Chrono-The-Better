@@ -7,10 +7,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.util.Log
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+
+private const val TAG = "ChronoMainActivity"
 
 class MainActivity: FlutterActivity() {
     private val CHANNEL = "com.vicolo.chrono/alarm"
@@ -49,10 +52,22 @@ class MainActivity: FlutterActivity() {
                         openFullScreenIntentSettings()
                         result.success(null)
                     }
+                    "getSystemVolume" -> {
+                        try {
+                            result.success(getSystemVolume())
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Reading the system alarm volume failed", e)
+                            result.error("getSystemVolumeFailed", e.message, null)
+                        }
+                    }
                     "setSystemVolume" -> {
                         val percent = call.argument<Double>("percent") ?: 100.0
-                        setSystemVolume(percent)
-                        result.success(null)
+                        try {
+                            result.success(setSystemVolume(percent))
+                        } catch (e: Exception) {
+                            Log.e(TAG, "Setting the system alarm volume to $percent% failed", e)
+                            result.error("setSystemVolumeFailed", e.message, null)
+                        }
                     }
                     else -> result.notImplemented()
                 }
@@ -105,18 +120,47 @@ class MainActivity: FlutterActivity() {
         return true
     }
 
-    /// Sets the system volume of the alarm audio stream, the same stream the
-    /// alarm and its volume preview play on (never media/notification).
-    private fun setSystemVolume(percent: Double) {
-        try {
-            val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            val stream = AudioManager.STREAM_ALARM
-            val max = am.getStreamMaxVolume(stream)
-            val target = (percent / 100.0 * max).toInt().coerceIn(0, max)
-            am.setStreamVolume(stream, target, 0)
-        } catch (e: Exception) {
-            // ignore
+    /// Reads the alarm audio stream: its current value in percent together
+    /// with the step range Android has for it. The alarm stream only holds a
+    /// handful of steps (7 on most phones, shown as 14% through 100%), and
+    /// those steps are the only values the app's volume slider is allowed to
+    /// show.
+    private fun getSystemVolume(): Map<String, Any> {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val stream = AudioManager.STREAM_ALARM
+        val max = am.getStreamMaxVolume(stream)
+        // getStreamMinVolume was only made public in Android 9. Older versions
+        // report the first step instead, so the slider never shows a 0% the
+        // system can't be asked for anyway.
+        val min = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            am.getStreamMinVolume(stream)
+        } else {
+            1
         }
+        val percent = if (max <= 0) 100.0 else am.getStreamVolume(stream) * 100.0 / max
+        return mapOf("percent" to percent, "min" to min, "max" to max)
+    }
+
+    /// Moves the alarm audio stream (the one the alarm and its volume preview
+    /// play on, never media/notification) to [percent], snapped to the nearest
+    /// step Android has for it, and returns the value Android actually stored.
+    private fun setSystemVolume(percent: Double): Double {
+        val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val stream = AudioManager.STREAM_ALARM
+        val max = am.getStreamMaxVolume(stream)
+        if (max <= 0) return 100.0
+        // Rounding, not truncating: 20% has to land on 1/7 = 14%, not on 0.
+        val target = Math.round(percent / 100.0 * max).toInt().coerceIn(0, max)
+        am.setStreamVolume(stream, target, 0)
+        val stored = am.getStreamVolume(stream)
+        if (stored != target) {
+            Log.w(
+                TAG,
+                "Android kept the alarm volume at $stored instead of $target " +
+                    "(volume fixed: ${am.isVolumeFixed})"
+            )
+        }
+        return stored * 100.0 / max
     }
 
     /// Opens the Android 14+ "full-screen notifications" access page for this

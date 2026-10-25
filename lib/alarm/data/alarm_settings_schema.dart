@@ -194,10 +194,22 @@ SettingGroup alarmSettingsSchema = SettingGroup(
                 100,
                 100,
                 unit: "%",
-                 onChange: (context, value) => setSystemVolume(value),
-
+                // The slider mirrors Android's own alarm volume: it can only
+                // sit on the steps Android has (14% through 100% on a
+                // 7-step phone), shows them as whole numbers, and moves the
+                // alarm channel on every change.
+                systemValue: getSystemVolume,
+                integerDisplay: true,
+                onChange: (context, value) => setSystemVolume(value),
                 previewActionBuilder: (context, setting) => VolumePreviewButton(
                     volumeSetting: setting as SliderSetting)),
+            SwitchSetting(
+              "Mute",
+              (context) => AppLocalizations.of(context)!.muteSetting,
+              false,
+              getDescription: (context) =>
+                  AppLocalizations.of(context)!.muteSettingDescription,
+            ),
             SwitchSetting(
               "Rising Volume",
               (context) => AppLocalizations.of(context)!.risingVolumeSetting,

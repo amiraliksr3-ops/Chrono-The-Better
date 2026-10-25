@@ -70,7 +70,7 @@ class RingtonePlayer {
     await _play(uri,
         vibrate: alarm.vibrate,
         loopMode: LoopMode.one,
-        volume: alarm.volume / 100,
+        volume: alarm.playbackVolume / 100,
         secondsToMaxVolume: alarm.risingVolumeDuration.inSeconds,
         startAtRandomPos: alarm.shouldStartMelodyAtRandomPos);
   }

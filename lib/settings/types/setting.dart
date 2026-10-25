@@ -421,6 +421,21 @@ class SliderSetting extends Setting<double> {
   final Widget Function(BuildContext context, Setting setting)?
       previewActionBuilder;
 
+  /// For sliders that mirror a system control instead of owning their value,
+  /// like the alarm volume slider, which mirrors Android's alarm volume.
+  /// Called while the card is built (and after each change, once the input
+  /// has settled); returns the system's current value in percent — null when
+  /// it couldn't be read, so the stored value is left alone — together with
+  /// the step range the system accepts, so the slider can only ever sit on
+  /// values the system actually has.
+  final Future<({double? percent, int min, int max})?> Function()?
+      systemValue;
+
+  /// Shows the value rounded to a whole number, for sliders whose steps are
+  /// whole numbers anyway (Android's alarm volume, shown as 14, 29, 43...
+  /// instead of 14.3, 28.6...).
+  final bool integerDisplay;
+
   SliderSetting(
     String name,
     String Function(BuildContext) getLocalizedName,
@@ -434,6 +449,8 @@ class SliderSetting extends Setting<double> {
     this.snapLength,
     this.unit = "",
     this.previewActionBuilder,
+    this.systemValue,
+    this.integerDisplay = false,
     List<EnableConditionParameter> enableConditions = const [],
     List<String> searchTags = const [],
   }) : super(name, getLocalizedName, getDescription, defaultValue, onChange,
@@ -458,6 +475,8 @@ class SliderSetting extends Setting<double> {
       enableConditions: enableConditions,
       unit: unit,
       previewActionBuilder: previewActionBuilder,
+      systemValue: systemValue,
+      integerDisplay: integerDisplay,
       isVisual: isVisual,
       searchTags: searchTags,
     );

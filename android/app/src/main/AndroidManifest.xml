@@ -20,6 +20,10 @@
   <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.READ_MEDIA_AUDIO"/>
+  <!-- Without this permission Android only lets an app lower the alarm volume
+    so far (it refuses to go below -36 dB), so the app's volume slider could
+    not reach the quiet end of the alarm stream. -->
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
 
   <application
     android:label="@string/app_name"

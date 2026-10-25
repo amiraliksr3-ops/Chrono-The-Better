@@ -73,7 +73,7 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
   void _setNextWidget() {
     setState(() {
       if (_currentIndex < 0) {
-        AlarmMuteController.instance.setTargetVolume(alarm.volume);
+        AlarmMuteController.instance.setTargetVolume(alarm.playbackVolume);
         _currentWidget = actionWidget;
       } else if (_currentIndex >= alarm.tasks.length) {
         AlarmMuteController.instance.cancel();
@@ -88,7 +88,7 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
       } else {
         // While solving tasks the alarm keeps ringing at its normal volume
         // (there is no separate "volume while solving tasks" setting anymore).
-        AlarmMuteController.instance.setTargetVolume(alarm.volume);
+        AlarmMuteController.instance.setTargetVolume(alarm.playbackVolume);
         // RingtonePlayer.setVolume(0);
         _currentWidget = alarm.tasks[_currentIndex].builder(_setNextWidget);
       }
@@ -109,7 +109,7 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
     alarm = currentAlarm;
 
     // Start a fresh mute session for this ringing screen
-    AlarmMuteController.instance.reset(alarm.volume);
+    AlarmMuteController.instance.reset(alarm.playbackVolume);
 
     // Guarantee lock-screen presentation: the ringing screen must show over
     // the lock screen and keep the display on, no matter which path opened it.

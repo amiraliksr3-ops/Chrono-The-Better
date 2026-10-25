@@ -12,6 +12,7 @@ class SliderField extends StatefulWidget {
       required this.title,
       this.unit = '',
       this.snapLength,
+      this.integerDisplay = false,
       this.description = '',
       this.trailing});
 
@@ -22,6 +23,12 @@ class SliderField extends StatefulWidget {
   final double max;
   final String unit;
   final double? snapLength;
+
+  /// Shows and accepts whole numbers only, for sliders whose steps are whole
+  /// numbers anyway (e.g. Android's alarm volume, whose steps are shown as
+  /// 14, 29, 43... instead of 14.3, 28.6...).
+  final bool integerDisplay;
+
   final void Function(double value) onChanged;
 
   /// Optional widget (e.g. a preview play button) placed at the end of the
@@ -60,10 +67,17 @@ class _SliderFieldState extends State<SliderField> {
 
   String valueToString(double value) {
     // if (value.isInfinite) return '∞';
-    final bool isIntegerOnly =
-        (widget.snapLength != null) && (widget.snapLength! % 1 <= 0.001);
-    return isIntegerOnly ? value.toInt().toString() : value.toStringAsFixed(1);
+    return _showsWholeNumbers
+        ? value.round().toString()
+        : value.toStringAsFixed(1);
   }
+
+  /// Whole numbers are shown without decimals, either because the setting
+  /// asked for it explicitly, or because its snap length already is one
+  /// (such sliders only ever hold whole numbers anyway).
+  bool get _showsWholeNumbers =>
+      widget.integerDisplay ||
+      ((widget.snapLength != null) && (widget.snapLength! % 1 <= 0.001));
 
   @override
   void didUpdateWidget(SliderField oldWidget) {
@@ -84,8 +98,7 @@ class _SliderFieldState extends State<SliderField> {
         ? ((widget.max - widget.min) / widget.snapLength!).round()
         : null;
 
-    final bool isIntegerOnly =
-        (widget.snapLength != null) && (widget.snapLength! % 1 <= 0.001);
+    final bool isIntegerOnly = _showsWholeNumbers;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
