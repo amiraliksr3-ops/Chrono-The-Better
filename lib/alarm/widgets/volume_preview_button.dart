@@ -67,10 +67,17 @@ class _VolumePreviewButtonState extends State<VolumePreviewButton> {
 
   @override
   Widget build(BuildContext context) {
+    // Match the color of the volume slider this button sits next to: the
+    // slider uses its thumb/active-track color when the theme defines one,
+    // otherwise the theme's primary color (which the slider defaults to).
+    final SliderThemeData sliderTheme = SliderTheme.of(context);
+    final Color sliderColor = sliderTheme.thumbColor ??
+        sliderTheme.activeTrackColor ??
+        Theme.of(context).colorScheme.primary;
     return IconButton(
       onPressed: _toggle,
       icon: Icon(_playing ? Icons.stop_rounded : Icons.play_arrow_rounded),
-      color: Colors.redAccent,
+      color: sliderColor,
       tooltip: null,
       splashRadius: 20.0,
     );

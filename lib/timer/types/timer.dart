@@ -43,8 +43,7 @@ class ClockTimer extends CustomizableListItem {
       ? _settings.getSetting("Label").value
       : '${_duration.toString()} timer';
   FileItem get ringtone => _settings.getSetting("Melody").value;
-  AndroidAudioUsage get audioChannel =>
-      _settings.getSetting("Audio Channel").value;
+  AndroidAudioUsage get audioChannel => AndroidAudioUsage.alarm;
   bool get vibrate => _settings.getSetting("Vibration").value;
   double get volume => _settings.getSetting("Volume").value;
   TimeDuration get risingVolumeDuration =>

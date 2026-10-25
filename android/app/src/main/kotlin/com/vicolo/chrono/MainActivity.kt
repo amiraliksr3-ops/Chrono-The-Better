@@ -105,14 +105,12 @@ class MainActivity: FlutterActivity() {
         return true
     }
 
-    /// Opens the Android 14+ "full-screen notifications" access page for this
-    /// app, or the app notification settings on older versions. Without this
-    /// permission, alarms can only appear as heads-up notifications instead of
-    /// taking over a locked or sleeping screen.
+    /// Sets the system volume of the alarm audio stream, the same stream the
+    /// alarm and its volume preview play on (never media/notification).
     private fun setSystemVolume(percent: Double) {
         try {
             val am = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-            val stream = AudioManager.STREAM_MUSIC
+            val stream = AudioManager.STREAM_ALARM
             val max = am.getStreamMaxVolume(stream)
             val target = (percent / 100.0 * max).toInt().coerceIn(0, max)
             am.setStreamVolume(stream, target, 0)
@@ -121,6 +119,10 @@ class MainActivity: FlutterActivity() {
         }
     }
 
+    /// Opens the Android 14+ "full-screen notifications" access page for this
+    /// app, or the app notification settings on older versions. Without this
+    /// permission, alarms can only appear as heads-up notifications instead of
+    /// taking over a locked or sleeping screen.
     private fun openFullScreenIntentSettings() {
         val appNotificationSettings = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
             .putExtra(Settings.EXTRA_APP_PACKAGE, packageName)

@@ -1,5 +1,3 @@
-import 'package:audio_session/audio_session.dart';
-import 'package:clock_app/audio/audio_channels.dart';
 import 'package:clock_app/audio/screens/ringtones_screen.dart';
 import 'package:clock_app/audio/types/ringtone_player.dart';
 import 'package:clock_app/common/logic/tags.dart';
@@ -54,12 +52,6 @@ SettingGroup timerSettingsSchema = SettingGroup(
 
               // shouldCloseOnSelect: false,
             ),
-            SelectSetting<AndroidAudioUsage>(
-                "Audio Channel",
-                (context) => AppLocalizations.of(context)!.audioChannelSetting,
-                audioChannelOptions, onChange: (context, index) {
-              RingtonePlayer.stop();
-            }),
             SliderSetting(
                 "Volume",
                 (context) => AppLocalizations.of(context)!.volumeSetting,

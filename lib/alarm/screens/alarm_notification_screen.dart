@@ -86,8 +86,9 @@ class _AlarmNotificationScreenState extends State<AlarmNotificationScreen> {
               ScheduledNotificationType.alarm);
         }
       } else {
-        AlarmMuteController.instance
-            .setTargetVolume(alarm.volume * alarm.volumeDuringTasks / 100);
+        // While solving tasks the alarm keeps ringing at its normal volume
+        // (there is no separate "volume while solving tasks" setting anymore).
+        AlarmMuteController.instance.setTargetVolume(alarm.volume);
         // RingtonePlayer.setVolume(0);
         _currentWidget = alarm.tasks[_currentIndex].builder(_setNextWidget);
       }
